@@ -1,0 +1,7 @@
+.686p
+.MODEL FLAT, C
+.STACK
+.DATA
+.CODE
+
+END

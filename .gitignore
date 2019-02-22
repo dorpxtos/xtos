@@ -1,0 +1,12 @@
+*.exe
+*.dll
+*.sys
+*.obj
+*.iso
+*.img
+*.pdb
+*.exp
+*.lib
+*.map
+*.log
+*.ignore

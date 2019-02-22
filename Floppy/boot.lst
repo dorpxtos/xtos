@@ -1,0 +1,11 @@
+; Operating System List
+
+[operating systems]
+default=xtos
+timeout=0
+
+; Entries
+
+[xtos]
+image=multi(0)rdisk(0)part(0)/KERNEL.EXE
+desc=XtOS

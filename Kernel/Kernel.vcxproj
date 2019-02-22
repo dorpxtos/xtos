@@ -1,0 +1,332 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Metal|Win32">
+      <Configuration>Metal</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Metal|x64">
+      <Configuration>Metal</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{DF1595B2-35F4-4CC7-8155-15278302B317}</ProjectGuid>
+    <RootNamespace>Kernel</RootNamespace>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+    <ProjectName>Kernel</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Metal|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Metal|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.props" />
+    <Import Project="..\Ext\nasm.props" />
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Metal|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Metal|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <GenerateManifest>false</GenerateManifest>
+    <LibraryPath>C:\Users\Carver Harrison\Documents\Visual Studio 2015\Projects\XtOS\Debug;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Metal|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <GenerateManifest>false</GenerateManifest>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <Optimization>Custom</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <IgnoreStandardIncludePath>true</IgnoreStandardIncludePath>
+      <MinimalRebuild>false</MinimalRebuild>
+      <ExceptionHandling>false</ExceptionHandling>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <AdditionalOptions>-Oy- %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>C:\Users\Carver Harrison\Documents\Visual Studio 2015\Projects\XtOS\Kernel;C:\Users\Carver Harrison\Documents\Visual Studio 2015\Projects\XtOS\Vbe;C:\Users\Carver Harrison\Documents\Visual Studio 2015\Projects\XtOS\Serial;C:\Users\Carver Harrison\Documents\Visual Studio 2015\Projects\XtOS\I8042;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <CallingConvention>Cdecl</CallingConvention>
+    </ClCompile>
+    <Link>
+      <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateMapFile>true</GenerateMapFile>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <EntryPointSymbol>Entry</EntryPointSymbol>
+      <FixedBaseAddress>false</FixedBaseAddress>
+      <DataExecutionPrevention>true</DataExecutionPrevention>
+      <SubSystem>Native</SubSystem>
+      <BaseAddress>0x100000</BaseAddress>
+      <RandomizedBaseAddress>true</RandomizedBaseAddress>
+      <LargeAddressAware>false</LargeAddressAware>
+      <AdditionalOptions>/DRIVER /ALIGN:512 %(AdditionalOptions)</AdditionalOptions>
+      <Version>
+      </Version>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
+      <RegisterOutput>false</RegisterOutput>
+      <AssemblyDebug>false</AssemblyDebug>
+    </Link>
+    <PostBuildEvent>
+      <Command>rem PeMultiboot 0x100000  "$(OutDir)Kernel.exe"
+copy "$(OutDir)*.exe" "$(SolutionDir)Floppy\"
+copy "$(OutDir)*.dll" "$(SolutionDir)Floppy\"
+copy "$(OutDir)*.sys" "$(SolutionDir)Floppy\"
+dd if="$(OutDir)bootsect.bin" of="$(OutDir)xtos.img" bs=512 count=1
+imdisk -a -f "$(OutDir)xtos.img" -s 1440K -m X:
+copy "$(SolutionDir)Floppy\*.*" X:\
+imdisk -D -m X:
+copy "$(OutDir)xtos.img" "$(OutDir)xtoshd.img"</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Metal|Win32'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <IgnoreStandardIncludePath>true</IgnoreStandardIncludePath>
+      <MinimalRebuild>false</MinimalRebuild>
+      <ExceptionHandling>false</ExceptionHandling>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <AdditionalOptions>-Oy- %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>C:\Users\Carver Harrison\Documents\Visual Studio 2015\Projects\XtOS\Kernel;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <GenerateMapFile>true</GenerateMapFile>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <EntryPointSymbol>Entry</EntryPointSymbol>
+      <FixedBaseAddress>false</FixedBaseAddress>
+      <DataExecutionPrevention>true</DataExecutionPrevention>
+      <AdditionalOptions>/DRIVER /ALIGN:512  /BASE:0x100000 %(AdditionalOptions)</AdditionalOptions>
+      <SubSystem>Native</SubSystem>
+    </Link>
+    <PostBuildEvent>
+      <Command>PeMultiboot 0x100000  "$(OutDir)Kernel.exe"
+copy "$(OutDir)*.exe" "$(SolutionDir)Floppy"
+dd if="$(OutDir)bootsect.bin" of="$(OutDir)xtos.img" bs=512 count=1
+imdisk -a -f "$(OutDir)xtos.img" -s 1440K -m X:
+copy "$(SolutionDir)Floppy\*.*" X:\
+imdisk -D -m X:</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Metal|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <MASM Include="Entry.asm">
+      <FileType>Document</FileType>
+    </MASM>
+    <MASM Include="InterruptStubs.asm" />
+    <MASM Include="Lgdt.asm" />
+    <MASM Include="llshl.asm" />
+    <MASM Include="PageMap.asm" />
+    <NASM Include="SetVideo.asm">
+      <FileType>Document</FileType>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">-fwin32 %(AdditionalOptions)</AdditionalOptions>
+    </NASM>
+    <NASM Include="Real.asm">
+      <FileType>Document</FileType>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">-fwin32 %(AdditionalOptions)</AdditionalOptions>
+    </NASM>
+    <MASM Include="TaskSwitching.asm" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="AtaPio.cpp" />
+    <ClCompile Include="Bochs.cpp" />
+    <ClCompile Include="CoreMods.cpp" />
+    <ClCompile Include="Crash.cpp" />
+    <ClCompile Include="Device.cpp" />
+    <ClCompile Include="Driver.cpp" />
+    <ClCompile Include="Fat12.cpp" />
+    <ClCompile Include="File.cpp" />
+    <ClCompile Include="Floppy.cpp" />
+    <ClCompile Include="Gdt.cpp" />
+    <ClCompile Include="Handle.cpp" />
+    <ClCompile Include="Idt.cpp" />
+    <ClCompile Include="Io.cpp" />
+    <ClCompile Include="Log.cpp" />
+    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="MemoryAllocator.cpp" />
+    <ClCompile Include="NullDev.cpp" />
+    <ClCompile Include="ObjectManager.cpp" />
+    <ClCompile Include="Paging.cpp" />
+    <ClCompile Include="Pic.cpp" />
+    <ClCompile Include="Pit.cpp" />
+    <ClCompile Include="PortableExecutable.cpp" />
+    <ClCompile Include="String.cpp" />
+    <ClCompile Include="Syscalls.cpp" />
+    <ClCompile Include="Task.cpp" />
+    <ClCompile Include="TextMode.cpp" />
+    <ClCompile Include="Video.cpp" />
+    <ClCompile Include="XtApi.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Access.h" />
+    <ClInclude Include="AtaPio.h" />
+    <ClInclude Include="Bochs.h" />
+    <ClInclude Include="Colors.h" />
+    <ClInclude Include="CoreMods.h" />
+    <ClInclude Include="Crash.h" />
+    <ClInclude Include="DeclSpec.h" />
+    <ClInclude Include="Fat12.h" />
+    <ClInclude Include="File.h" />
+    <ClInclude Include="Floppy.h" />
+    <ClInclude Include="Gdt.h" />
+    <ClInclude Include="Handle.h" />
+    <ClInclude Include="Idt.h" />
+    <ClInclude Include="InternalFont.h" />
+    <ClInclude Include="Io.h" />
+    <ClInclude Include="Log.h" />
+    <ClInclude Include="MemoryAllocator.h" />
+    <ClInclude Include="Multiboot.h" />
+    <ClInclude Include="Device.h" />
+    <ClInclude Include="Driver.h" />
+    <ClInclude Include="NullDev.h" />
+    <ClInclude Include="ObjectManager.h" />
+    <ClInclude Include="Paging.h" />
+    <ClInclude Include="Pic.h" />
+    <ClInclude Include="Pit.h" />
+    <ClInclude Include="PortableExecutable.h" />
+    <ClInclude Include="PortIO.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="stdarg.h" />
+    <ClInclude Include="stdbool.h" />
+    <ClInclude Include="stddef.h" />
+    <ClInclude Include="stdint.h" />
+    <ClInclude Include="string.h" />
+    <ClInclude Include="Syscalls.h" />
+    <ClInclude Include="Task.h" />
+    <ClInclude Include="TextMode.h" />
+    <ClInclude Include="vadefs.h" />
+    <ClInclude Include="Video.h" />
+    <ClInclude Include="XtApi.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Kernel.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="icon.ico" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.targets" />
+    <Import Project="..\Ext\nasm.targets" />
+  </ImportGroup>
+</Project>

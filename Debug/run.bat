@@ -1,0 +1,1 @@
+"C:\Program Files\qemu\qemu-system-i386.exe" -fda xtos.img -hda xtoshd.img -boot a -m 128M -serial stdio -d int,cpu_reset -D qemu.log
