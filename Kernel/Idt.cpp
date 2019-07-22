@@ -10,21 +10,6 @@
 #define IDT_ENTRY_COUNT 256
 #define IRQ_COUNT 16
 
-#pragma pack(push,1)
-struct IdtPointer {
-	uint16_t limit;
-	uint32_t base;
-};
-
-struct IdtEntry {
-	uint16_t baseLow;
-	uint16_t selector;
-	uint8_t unused;
-	uint8_t flags;
-	uint16_t baseHigh;
-};
-#pragma pack(pop)
-
 IdtPointer idtr;
 IdtEntry idt[IDT_ENTRY_COUNT];
 
@@ -63,6 +48,17 @@ char* isrMessages[] = {
 	"Reserved",
 	"Reserved",
 	"Reserved"
+};
+
+char* pageFaultMessages[] = {
+	"Supervisory process tried to read a non-present page entry",
+	"Supervisory process tried to read a page and caused a protection fault",
+	"Supervisory process tried to write to a non-present page entry",
+	"Supervisory process tried to write a page and caused a protection fault",
+	"User process tried to read a non-present page entry",
+	"User process tried to read a page and caused a protection fault",
+	"User process tried to write to a non-present page entry",
+	"User process tried to write a page and caused a protection fault"
 };
 
 extern "C" {
@@ -144,38 +140,38 @@ static void SetGate(uint8_t num, uint32_t base, uint16_t sel, uint8_t flags) {
 
 static void InitializeGates() {
 	// ISRs
-	SetGate(0, (uint32_t)Isr0, 0x08, 0b10001110);
-	SetGate(1, (uint32_t)Isr1, 0x08, 0b10001110);
-	SetGate(2, (uint32_t)Isr2, 0x08, 0b10001110);
-	SetGate(3, (uint32_t)Isr3, 0x08, 0b10001110);
-	SetGate(4, (uint32_t)Isr4, 0x08, 0b10001110);
-	SetGate(5, (uint32_t)Isr5, 0x08, 0b10001110);
-	SetGate(6, (uint32_t)Isr6, 0x08, 0b10001110);
-	SetGate(7, (uint32_t)Isr7, 0x08, 0b10001110);
-	SetGate(8, (uint32_t)Isr8, 0x08, 0b10001110);
-	SetGate(9, (uint32_t)Isr9, 0x08, 0b10001110);
-	SetGate(10, (uint32_t)Isr10, 0x08, 0b10001110);
-	SetGate(11, (uint32_t)Isr11, 0x08, 0b10001110);
-	SetGate(12, (uint32_t)Isr12, 0x08, 0b10001110);
-	SetGate(13, (uint32_t)Isr13, 0x08, 0b10001110);
-	SetGate(14, (uint32_t)Isr14, 0x08, 0b10001110);
-	SetGate(15, (uint32_t)Isr15, 0x08, 0b10001110);
-	SetGate(16, (uint32_t)Isr16, 0x08, 0b10001110);
-	SetGate(17, (uint32_t)Isr17, 0x08, 0b10001110);
-	SetGate(18, (uint32_t)Isr18, 0x08, 0b10001110);
-	SetGate(19, (uint32_t)Isr19, 0x08, 0b10001110);
-	SetGate(20, (uint32_t)Isr20, 0x08, 0b10001110);
-	SetGate(21, (uint32_t)Isr21, 0x08, 0b10001110);
-	SetGate(22, (uint32_t)Isr22, 0x08, 0b10001110);
-	SetGate(23, (uint32_t)Isr23, 0x08, 0b10001110);
-	SetGate(24, (uint32_t)Isr24, 0x08, 0b10001110);
-	SetGate(25, (uint32_t)Isr25, 0x08, 0b10001110);
-	SetGate(26, (uint32_t)Isr26, 0x08, 0b10001110);
-	SetGate(27, (uint32_t)Isr27, 0x08, 0b10001110);
-	SetGate(28, (uint32_t)Isr28, 0x08, 0b10001110);
-	SetGate(29, (uint32_t)Isr29, 0x08, 0b10001110);
-	SetGate(30, (uint32_t)Isr30, 0x08, 0b10001110);
-	SetGate(31, (uint32_t)Isr31, 0x08, 0b10001110);
+	SetGate(0, (uint32_t)Isr0, 0x08, 0b11101110);
+	SetGate(1, (uint32_t)Isr1, 0x08, 0b11101110);
+	SetGate(2, (uint32_t)Isr2, 0x08, 0b11101110);
+	SetGate(3, (uint32_t)Isr3, 0x08, 0b11101110);
+	SetGate(4, (uint32_t)Isr4, 0x08, 0b11101110);
+	SetGate(5, (uint32_t)Isr5, 0x08, 0b11101110);
+	SetGate(6, (uint32_t)Isr6, 0x08, 0b11101110);
+	SetGate(7, (uint32_t)Isr7, 0x08, 0b11101110);
+	SetGate(8, (uint32_t)Isr8, 0x08, 0b11101110);
+	SetGate(9, (uint32_t)Isr9, 0x08, 0b11101110);
+	SetGate(10, (uint32_t)Isr10, 0x08, 0b11101110);
+	SetGate(11, (uint32_t)Isr11, 0x08, 0b11101110);
+	SetGate(12, (uint32_t)Isr12, 0x08, 0b11101110);
+	SetGate(13, (uint32_t)Isr13, 0x08, 0b11101110);
+	SetGate(14, (uint32_t)Isr14, 0x08, 0b11101110);
+	SetGate(15, (uint32_t)Isr15, 0x08, 0b11101110);
+	SetGate(16, (uint32_t)Isr16, 0x08, 0b11101110);
+	SetGate(17, (uint32_t)Isr17, 0x08, 0b11101110);
+	SetGate(18, (uint32_t)Isr18, 0x08, 0b11101110);
+	SetGate(19, (uint32_t)Isr19, 0x08, 0b11101110);
+	SetGate(20, (uint32_t)Isr20, 0x08, 0b11101110);
+	SetGate(21, (uint32_t)Isr21, 0x08, 0b11101110);
+	SetGate(22, (uint32_t)Isr22, 0x08, 0b11101110);
+	SetGate(23, (uint32_t)Isr23, 0x08, 0b11101110);
+	SetGate(24, (uint32_t)Isr24, 0x08, 0b11101110);
+	SetGate(25, (uint32_t)Isr25, 0x08, 0b11101110);
+	SetGate(26, (uint32_t)Isr26, 0x08, 0b11101110);
+	SetGate(27, (uint32_t)Isr27, 0x08, 0b11101110);
+	SetGate(28, (uint32_t)Isr28, 0x08, 0b11101110);
+	SetGate(29, (uint32_t)Isr29, 0x08, 0b11101110);
+	SetGate(30, (uint32_t)Isr30, 0x08, 0b11101110);
+	SetGate(31, (uint32_t)Isr31, 0x08, 0b11101110);
 
 	// Remapping
 	RemapInterrupts();
@@ -204,7 +200,7 @@ static void InitializeGates() {
 
 int IrqInstall(uint8_t num, void(*handler)(InterruptRegisters*)) {
 	// Print message
-	LogPrint("Installing IRQ# %d", num);
+	Log("installing IRQ# %d -> %x", num, handler);
 
 	// Check if a handler is already registered
 	if (irqHandlers[num]) return -1;
@@ -229,8 +225,14 @@ int IrqUninstall(uint8_t num) {
 
 extern "C" {
 	void IsrHandler(InterruptRegisters* registers) {
-		CrashCritical(isrMessages[registers->int_no], registers);
-		while (1) {}
+		if (registers->int_no == 0xE) {
+			// Page fault
+			CrashCritical(pageFaultMessages[registers->err_code % 8], registers);
+		} else {
+			// Other exception
+			CrashCritical(isrMessages[registers->int_no], registers);
+		}
+		while (1);
 	}
 
 	void IrqHandler(InterruptRegisters* registers) {
@@ -260,5 +262,5 @@ void IdtInit() {
 	EnableInterrupts();
 	
 	// Success!
-	LogPrint("IRQ");
+	Log("idt initialized");
 }

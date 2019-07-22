@@ -1,3 +1,3 @@
 section .data
 global _badapple
-_badapple: incbin "badapple.txt"
+_badapple: ;incbin "badapple.txt"

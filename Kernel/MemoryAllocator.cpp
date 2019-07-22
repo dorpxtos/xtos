@@ -3,6 +3,7 @@ Based on Mintsuki's AMAZING klib.c.
 */
 
 #include <Paging.h>
+#include <Log.h>
 #include <MemoryAllocator.h>
 
 struct AllocMetadata {
@@ -18,7 +19,7 @@ void* MemoryAllocate(size_t size) {
 
 	if (size % PAGE_SIZE) page_count++;
 
-	ptr = (char*)PmmAlloc(page_count + 1);
+	ptr = KERNEL_MEMORY_BASE + (char*)PmmAlloc(page_count + 1);
 
 	if (!ptr) {
 		return (void*)0;

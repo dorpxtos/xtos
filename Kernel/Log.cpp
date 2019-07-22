@@ -1,6 +1,7 @@
 #include <stdarg.h>
 #include <stdbool.h>
 #include <string.h>
+#include <Utf8.h>
 #include <TextMode.h>
 #include <Bochs.h>
 #include <CoreMods.h>
@@ -14,11 +15,11 @@
 #define ITOA_BUFFER_LENGTH 64
 
 #define LOG_TEXTMODE 1
-#define LOG_BOCHS 0
+#define LOG_BOCHS 1
 #define LOG_SERIAL 0
 #define LOG_VIDEO 1
 
-static void LogPrintChar(char c) {
+void LogPrintChar(utf8_int32_t c) {
 #if LOG_TEXTMODE
 	if (useTextMode) {
 		TextmodePrintChar(c);
@@ -43,7 +44,12 @@ static void LogPrintChar(char c) {
 }
 
 static void LogPrintString(char* message) {
-	while (*message) LogPrintChar(*message++);
+	utf8_int32_t c;
+	while (*message) {
+		utf8codepoint(message, &c);
+		LogPrintChar(c);
+		message++;
+	}
 }
 
 void LogPrint(char* format, ...) {
@@ -56,19 +62,23 @@ void LogPrint(char* format, ...) {
 	int repeatTimes = 0;
 	char repeatChar = 0;
 	int r;
+	utf8_int32_t uc;
 
 	// Loop through every character
 	while (*format) {
+		// Read codepoint
+		format = (char*)utf8codepoint(format, &uc);
+
 		// If in formatting
 		if (inFormatting) {
 			// If getting the repeat character
 			if (gettingRepeatChar) {
-				repeatChar = *format;
+				repeatChar = uc;
 				gettingRepeatChar = false;
 			}
 			// If just formatting
 			else {
-				switch (*format) {
+				switch (uc) {
 				case '0':
 				case '1':
 				case '2':
@@ -79,7 +89,7 @@ void LogPrint(char* format, ...) {
 				case '7':
 				case '8':
 				case '9':
-					repeatTimes = *format - '0';
+					repeatTimes = uc - '0';
 					gettingRepeatChar = true;
 					break;
 
@@ -166,7 +176,7 @@ void LogPrint(char* format, ...) {
 		}
 		// If not in formatting
 		else {
-			switch (*format) {
+			switch (uc) {
 			case '%':
 				// Clear buffers
 				memset(itoaBuffer, 0, ITOA_BUFFER_LENGTH);
@@ -178,13 +188,10 @@ void LogPrint(char* format, ...) {
 				inFormatting = true;
 				break;
 			default:
-				LogPrintChar(*format);
+				LogPrintChar(uc);
 				break;
 			}
 		}
-
-		// Next character
-		format++;
 	}
 
 	LogPrintChar('\n');
@@ -195,7 +202,7 @@ void LogPrint(char* format, ...) {
 DriverObject* logDriver;
 DeviceObject* logDevice;
 
-int LogDevWrite(IoStack* req) {
+IoStatus LogDevWrite(IoStack* req) {
 	for (int i = 0; i < req->parameters.write.count; i++) {
 		LogPrintChar(req->parameters.write.buffer[i]);
 	}

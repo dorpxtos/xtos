@@ -55,11 +55,14 @@ struct Process {
 
 extern bool schedulerEnabled;
 extern int yieldInterval;
+extern Process* currentProcess;
+extern Thread* currentThread;
 
 DllExport Process* TaskNewProcess(char*);
 DllExport Thread* TaskNewThread(Process*);
 DllExport Handle CreateHandle(void*);
 DllExport Handle GetRunningThreadHandle();
 DllExport void* HandleRead(Handle);
+DllExport void* ProcAllocPages(Process* proc, size_t pages);
 void TaskYield(InterruptRegisters*);
 void TaskInit();

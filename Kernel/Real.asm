@@ -23,13 +23,17 @@ _RealRoutine:
 	mov esi, real_init
 	mov edi, 0x1000
 	mov ecx, real_init_size
-	rep movsb
+.L0:
+	movsb
+	loop .L0
     
 	; Routine's blob to 0000:8000
 	pop ecx
 	pop esi
 	mov edi, 0x8000
-	rep movsb
+.L1:
+	movsb
+	loop .L1
     
 	; Call module
 	mov eax, 0x1000

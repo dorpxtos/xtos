@@ -10,6 +10,7 @@
 #include <Pic.h>
 #include <ObjectManager.h>
 #include <Handle.h>
+#include <Stacktrace.h>
 #include <Task.h>
 
 #define MAX_TOTAL_PROCESSES 4096
@@ -29,6 +30,10 @@ int yieldInterval = 1;
 extern "C" void TaskSpinup(TaskRegisters*, uintptr_t);
 
 static Process* GetProcessFromThread(Thread* t) {
+	if (t->process > MAX_TOTAL_PROCESSES) {
+		Log("!! Too large proc # !!");
+		_asm int 3
+	}
 	return processes[t->process];
 }
 
@@ -39,8 +44,8 @@ int TaskCreateStack(Thread* t) {
 	size_t stack = (size_t)PmmAlloc(pages);
 	size_t vstack = proc->stackTop;
 	proc->stackTop += stksize;
-	LogPrint("stk=%x", vstack);
 	MapPage(proc->pagemap, stack, vstack, 0x7);
+	MapPage(kernelPagemap, stack, vstack, 0x7);
 	t->ustack = vstack;
 	t->registers.esp = vstack;
 
@@ -77,22 +82,24 @@ Thread* TaskNewThread(Process* proc) {
 				}
 			}
 
-			proc->threads[i]->active = true;
-			proc->threads[i]->process = proc->id;
+			if (proc->threads[i]) {
+				proc->threads[i]->active = true;
+				proc->threads[i]->process = proc->id;
 
-			memset(&proc->threads[i]->registers, 0, sizeof(InterruptRegisters));
-			proc->threads[i]->registers.eip = proc->pe->header->imageBase + proc->pe->header->addressOfEntryPoint;
-			proc->threads[i]->registers.cs = 0x1b;
-			proc->threads[i]->registers.ds = 0x23;
-			proc->threads[i]->registers.es = 0x23;
-			proc->threads[i]->registers.fs = 0x23;
-			proc->threads[i]->registers.gs = 0x23;
-			proc->threads[i]->registers.ss = 0x23;
-			proc->threads[i]->registers.eflags = 0x202;
+				memset(&proc->threads[i]->registers, 0, sizeof(InterruptRegisters));
+				proc->threads[i]->registers.eip = proc->pe->header->imageBase + proc->pe->header->addressOfEntryPoint;
+				proc->threads[i]->registers.cs = 0x1b;
+				proc->threads[i]->registers.ds = 0x23;
+				proc->threads[i]->registers.es = 0x23;
+				proc->threads[i]->registers.fs = 0x23;
+				proc->threads[i]->registers.gs = 0x23;
+				proc->threads[i]->registers.ss = 0x23;
+				proc->threads[i]->registers.eflags = 0x202;
 
-			TaskCreateStack(proc->threads[i]);
+				TaskCreateStack(proc->threads[i]);
 
-			return proc->threads[i];
+				return proc->threads[i];
+			}
 		}
 	}
 
@@ -100,7 +107,7 @@ Thread* TaskNewThread(Process* proc) {
 }
 
 Process* TaskNewProcess(char* path) {
-	LogPrint("Creating new process: '%s'", path);
+	Log("Creating new process: '%s'", path);
 	Process* proc;
 
 	for (int i = 0; i < MAX_TOTAL_PROCESSES; i++) {
@@ -110,51 +117,57 @@ Process* TaskNewProcess(char* path) {
 		}
 	}
 
-	proc->pe = PeLoad(path);
+	if (proc) {
+		memset(proc->handles, 0, MAX_HANDLES * sizeof(Handle));
 
-	proc->name = path;
-	proc->pagemap = kernelPagemap;
-	proc->stackTop = proc->pe->top;
+		proc->pe = PeLoad(path, NULL, CreatePagemap());
+		proc->name = path;
+		proc->pagemap = proc->pe->pagemap;
+		proc->stackTop = proc->pe->top;
 
-	Thread* adamThread = TaskNewThread(proc);
+		Thread* adamThread = TaskNewThread(proc);
 
-	LogPrint("Created process '%s' (PID: %d) (TID: %d)", proc->name, proc->id, adamThread->id);
+		Log("Created process '%s' (PID: %d) (TID: %d) (Pagemap: %x)", proc->name, proc->id, adamThread->id, proc->pagemap);
 
-	return proc;
+		return proc;
+	} else {
+		return NULL;
+	}
 }
 
 Handle TaskProcessCreateHandle(Process* proc, void* obj) {
 	for (int i = 0; i < MAX_HANDLES; i++) {
 		if (!proc->handles[i]) {
 			proc->handles[i] = (uintptr_t)obj;
-			Obj* objh = ObGetHeader(obj);
-			objh->pointerCount++;
+			/*Obj* objh = ObGetHeader(obj);
+			objh->pointerCount++;*/
 			return i;
 		}
 	}
 
-	LogPrint("!! Handle table filled !!");
+	Log("!! Handle table filled !!");
 	return NULL;
 }
 
 Handle CreateHandle(void* obj) {
-	return TaskProcessCreateHandle(currentProcess, obj);
-}
-
-Handle GetRunningThreadHandle() {
-	return CreateHandle(currentThread);
+	Handle h = TaskProcessCreateHandle(currentProcess, obj);
+	return h;
 }
 
 void* HandleRead(Handle h) {
 	return (void*)(currentProcess->handles[h]);
 }
 
+Handle GetRunningThreadHandle() {
+	return CreateHandle(currentThread);
+}
+
 void TaskYield(InterruptRegisters* oldRegs) {
-	//LogPrint("Yield from '%s' (PID: %d) (TID: %d)", currentProcess->name, currentProcess->id, currentThread->id);
-	//LogPrint("ss=%x esp=%x sizeof=%x", oldRegs->ss, oldRegs->esp, sizeof(TaskRegisters));
+	//Log("Yield from '%s' (PID: %d) (TID: %d)", currentProcess->name, currentProcess->id, currentThread->id);
+	//Log("ss=%x esp=%x sizeof=%x", oldRegs->ss, oldRegs->esp, sizeof(TaskRegisters));
 
 	if (currentProcess->id > MAX_TOTAL_PROCESSES || currentThread->id > MAX_TOTAL_THREADS) {
-		LogPrint("!! CORRUPTION IN SCHEDULER !!");
+		Log("!! CORRUPTION IN SCHEDULER !!");
 		_asm int 3;
 	}
 
@@ -184,24 +197,44 @@ void TaskYield(InterruptRegisters* oldRegs) {
 	}
 
 	uintptr_t cr3 = (uintptr_t)currentProcess->pagemap;
-	//LogPrint("Yield to '%s' (PID: %d) (TID: %d) cr3=%x esp=%x", currentProcess->name, currentProcess->id, currentThread->id, cr3, currentThread->registers.esp);
+	//Log("Yield to '%s' (PID: %d) (TID: %d) cr3=%x eip=%x", currentProcess->name, currentProcess->id, currentThread->id, cr3, currentThread->registers.eip);
+
+	//Stacktrace(5);
 
 	PicSendEoi((uint8_t)oldRegs->int_no);
-
+	
 	TaskSpinup(&currentThread->registers, cr3);
+}
+
+void* ProcAllocPages(Process* proc, size_t pages) {
+	if (!proc) {
+		return NULL;
+	}
+
+	if (!pages) {
+		return NULL;
+	}
+
+	void* p = PmmAlloc(pages);
+
+	if (!p) {
+		return NULL;
+	}
+
+	void* ptop = (void*)proc->stackTop;
+
+	for (int i = 0; i < pages; i++) {
+		MapPage(proc->pagemap, (size_t)p, proc->stackTop, 0x7);
+		MapPage(kernelPagemap, (size_t)p, proc->stackTop, 0x7);
+		proc->stackTop += PAGE_SIZE;
+	}
+
+	return ptop;
 }
 
 void TaskInit() {
 	processes = (Process**)MemoryAllocate(MAX_TOTAL_PROCESSES * sizeof(Process*));
 	threads = (Thread**)MemoryAllocate(MAX_TOTAL_THREADS * sizeof(Thread*));
 
-	Process* proc = TaskNewProcess("HELLO.EXE");
-	currentProcess = proc;
-	currentThread = proc->threads[0];
-	LogPrint("hello.exe ok");
-
-	//Process* proc1 = TaskNewProcess("HELLO2.EXE");
-	//LogPrint("hello2.exe ok");
-
-	LogPrint("TASK");
+	Log("TASK");
 }

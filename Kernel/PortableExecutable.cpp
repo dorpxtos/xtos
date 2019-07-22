@@ -6,6 +6,7 @@
 #include <Log.h>
 #include <File.h>
 #include <Paging.h>
+#include <Section.h>
 #include <PortableExecutable.h>
 
 #define MZ_SIGNATURE 0x5A4D
@@ -38,22 +39,22 @@ static bool IsValidPeSignature(PeProgram* prog) {
 
 void PePrintSections(PeProgram* prog) {
 	for (int i = 0; i < prog->header->sectionCount; i++) {
-		LogPrint("%s (%x -> %x)", prog->header->sections[i].name, prog->header->sections[i].virtualAddress, prog->header->sections[i].virtualAddress + prog->header->sections[i].virtualSize);
+		Log("%s (%x -> %x)", prog->header->sections[i].name, prog->header->sections[i].virtualAddress, prog->header->sections[i].virtualAddress + prog->header->sections[i].virtualSize);
 	}
 }
 
 void PePrintHeaderInfo(PeProgram* prog) {
-	LogPrint("imageBase = %x", prog->header->imageBase);
+	Log("imageBase = %x", prog->header->imageBase);
 	PePrintSections(prog);
 }
 
 int PeLoadDll(PeProgram* prog) {
-	//LogPrint("isdll");
+	//Log("isdll");
 	return 0;
 }
 
 int PeLoadExe(PeProgram* prog) {
-	//LogPrint("isexe");
+	//Log("isexe");
 	return 0;
 }
 
@@ -67,10 +68,6 @@ uint32_t GetVirtualAddressOfSection(PeProgram* prog, char* sectionName) {
 	return -1;
 }
 
-uintptr_t RvaToAbs(PeProgram* prog, uintptr_t addr) {
-	return (uintptr_t)(prog->header->imageBase + addr);
-}
-
 int PeRelocate(PeProgram* prog) {
 	uint16_t* reloc = (uint16_t*)(prog->data + GetVirtualAddressOfSection(prog, ".reloc"));
 	BaseRelocationBlock* relocBlock = (BaseRelocationBlock*)reloc;
@@ -78,15 +75,26 @@ int PeRelocate(PeProgram* prog) {
 
 	// Create the virtual memory
 	uint8_t* vm = (uint8_t*)MemoryAllocate(prog->header->sizeOfImage);
+	uintptr_t pm = (uintptr_t)vm - KERNEL_MEMORY_BASE;
+
+	//Log("PM is %x", pm);
+
+	// Map image
+	uint8_t pf = 0x7;
+	if (prog->flags & PELOAD_FLAG_INKERNEL) {
+		pf = 0x3;
+		SectionCreate(pm, imgbase, prog->header->sizeOfImage, pf, SECTION_FLAG_ALWAYS_LOADED);
+	}
 
 	int k;
 	for (k = 0; k < (prog->header->sizeOfImage + (prog->header->sizeOfImage / 2)) / PAGE_SIZE; k++) {
-		MapPage(kernelPagemap, (size_t)vm + k * PAGE_SIZE, imgbase + k * PAGE_SIZE, 0x7);
+		// Mapping into process pagemap
+		MapPage(prog->pagemap, pm + k * PAGE_SIZE, imgbase + k * PAGE_SIZE, pf);
 	}
 
 	prog->top = imgbase + k * PAGE_SIZE;
 
-	//LogPrint("Size of Image: %x", prog->header->sizeOfImage);
+	//Log("Size of Image: %x", prog->header->sizeOfImage);
 
 	// Header
 	memcpy(vm, prog->data, prog->header->sizeOfHeaders);
@@ -96,14 +104,14 @@ int PeRelocate(PeProgram* prog) {
 		memcpy(vm+prog->header->sections[i].virtualAddress, prog->data+prog->header->sections[i].pointerToRawData, prog->header->sections[i].sizeOfRawData);
 	}
 
-	prog->data = (uint8_t*)imgbase;
+	prog->vm = vm;
 
 	return 0;
 }
 
 int PeReadCoffSymbols(PeProgram* prog) {
 	CoffSymbol* table = (CoffSymbol*)(prog->data + prog->header->symbolTable);
-	//LogPrint("total symbols: %d", prog->header->symbolCount);
+	//Log("total symbols: %d", prog->header->symbolCount);
 
 	for (int i = 0; i < prog->header->symbolCount; i++) {
 		int j;
@@ -112,7 +120,7 @@ int PeReadCoffSymbols(PeProgram* prog) {
 			if (!debugSymbols[j]) goto found;
 		}
 
-		LogPrint("!! Debug symbol table filled !!");
+		Log("!! Debug symbol table filled !!");
 		return -1;
 
 	found:
@@ -131,7 +139,7 @@ int PeReadCoffSymbols(PeProgram* prog) {
 
 		debugSymbols[j] = sym;
 
-		LogPrint("sym=%s@%x", sym->name, sym->name);
+		Log("sym=%s@%x", sym->name, sym->name);
 		i += table[i].numaux;
 	}
 
@@ -139,8 +147,8 @@ int PeReadCoffSymbols(PeProgram* prog) {
 }
 
 char* GetExportName(PeProgram* prog, int i) {
-	uint32_t* enames = (uint32_t*)RvaToAbs(prog, (uintptr_t)prog->edata[0].namePointerRva);
-	return (char*)RvaToAbs(prog, (uintptr_t)enames[i]);
+	uint32_t* enames = (uint32_t*)RvaToAbsPhysical(prog, (uintptr_t)prog->edata[0].namePointerRva);
+	return (char*)RvaToAbsPhysical(prog, (uintptr_t)enames[i]);
 }
 
 int ExportSymbol(char* name, char* ename, uintptr_t ptr) {
@@ -150,7 +158,7 @@ int ExportSymbol(char* name, char* ename, uintptr_t ptr) {
 		if (!globalSymbolTable[j].ptr) goto found;
 	}
 
-	LogPrint("!! Export table filled !!");
+	Log("!! Export table filled !!");
 	return -1;
 
 found:
@@ -158,7 +166,7 @@ found:
 	globalSymbolTable[j].ename = ename;
 	globalSymbolTable[j].ptr = ptr;
 
-	//LogPrint("%d: %s: %x", j, globalSymbolTable[j].name, globalSymbolTable[j].ptr);
+	//Log("%d: %s: %x", j, globalSymbolTable[j].name, globalSymbolTable[j].ptr);
 
 	return 0;
 }
@@ -166,20 +174,20 @@ found:
 int PeReadExportTable(PeProgram* prog) {
 	if (!prog->header->exportTable.virtualAddress) return 0;
 
-	ExportDirectoryTable* edata = (ExportDirectoryTable*)RvaToAbs(prog, (uintptr_t)prog->header->exportTable.virtualAddress);
+	ExportDirectoryTable* edata = (ExportDirectoryTable*)RvaToAbsPhysical(prog, (uintptr_t)prog->header->exportTable.virtualAddress);
 
 	prog->edata = edata;
-	prog->name = strupr((char*)RvaToAbs(prog, edata[0].nameRva));
+	prog->name = strupr((char*)RvaToAbsPhysical(prog, edata[0].nameRva));
 
-	uint32_t* exportAddressTable = (uint32_t*)RvaToAbs(prog, edata[0].exportAddressTableRva);
-	uint32_t* namePointerTable = (uint32_t*)RvaToAbs(prog, edata[0].namePointerRva);
-	uint16_t* ordinalTable = (uint16_t*)RvaToAbs(prog, edata[0].ordinalTableRva);
+	uint32_t* exportAddressTable = (uint32_t*)RvaToAbsPhysical(prog, edata[0].exportAddressTableRva);
+	uint32_t* namePointerTable = (uint32_t*)RvaToAbsPhysical(prog, edata[0].namePointerRva);
+	uint16_t* ordinalTable = (uint16_t*)RvaToAbsPhysical(prog, edata[0].ordinalTableRva);
 
 	for (int i = 0; i < edata[0].numberOfNamePointers; i++) {
-		char* name = (char*)RvaToAbs(prog, namePointerTable[i]);
+		char* name = (char*)RvaToAbsPhysical(prog, namePointerTable[i]);
 		uint16_t ordinal = ordinalTable[i] + 1;
 		uint32_t rva = exportAddressTable[ordinal - edata[0].ordinalBase];
-		ExportSymbol(name, prog->name, RvaToAbs(prog, rva));
+		ExportSymbol(name, prog->name, prog->header->imageBase + rva);
 	}
 
 	return 0;
@@ -188,17 +196,17 @@ int PeReadExportTable(PeProgram* prog) {
 int PeReadImportTable(PeProgram* prog) {
 	if (!prog->header->importTable.virtualAddress) return 0;
 
-	ImportDirectoryTable* idata = (ImportDirectoryTable*)RvaToAbs(prog, prog->header->importTable.virtualAddress);
-	//LogPrint("idata @ %x", idata);
+	ImportDirectoryTable* idata = (ImportDirectoryTable*)RvaToAbsPhysical(prog, prog->header->importTable.virtualAddress);
+	//Log("idata @ %x", idata);
 
 	PeProgram* lex;
 
 	for (int tableIndex = 0; idata[tableIndex].importLookupTableRva; tableIndex++) {
-		char* name = strupr((char*)RvaToAbs(prog, idata[tableIndex].nameRva));
+		char* name = strupr((char*)RvaToAbsPhysical(prog, idata[tableIndex].nameRva));
 		
 		for (int i = 0; i < maxLeItems; i++) {
 			if (loadedExecutables[i]) {
-				//LogPrint("%s wants %s and found %s.", prog->name, name, loadedExecutables[i]->name);
+				//Log("%s wants %s and found %s.", prog->name, name, loadedExecutables[i]->name);
 				if (!strcmp(loadedExecutables[i]->name, name)) {
 					lex = loadedExecutables[i];
 					goto isLoaded;
@@ -206,21 +214,22 @@ int PeReadImportTable(PeProgram* prog) {
 			}
 		}
 
-		lex = PeLoad(name);
+		int lexflags = prog->flags;
+		lex = PeLoad(name, lexflags, prog->pagemap);
 
 	isLoaded:
-		uint32_t* lookupTable = (uint32_t*)RvaToAbs(prog, idata[tableIndex].importLookupTableRva);
-		uint32_t* addrTable = (uint32_t*)RvaToAbs(prog, idata[tableIndex].importAddressTableRva);
+		uint32_t* lookupTable = (uint32_t*)RvaToAbsPhysical(prog, idata[tableIndex].importLookupTableRva);
+		uint32_t* addrTable = (uint32_t*)RvaToAbsPhysical(prog, idata[tableIndex].importAddressTableRva);
 
-		//LogPrint("%s %x", name, lookupTable);
+		//Log("%s %x", name, lookupTable);
 		
 		for (int lookupTableIndex = 0; lookupTable[lookupTableIndex]; lookupTableIndex++) {
 			if (lookupTable[lookupTableIndex] & 0x80000000) {
-				LogPrint("## Ordinal imports not supported ##");
+				Log("## Ordinal imports not supported ##");
 			} else {
-				HintNameTableEntry* hltEntry = (HintNameTableEntry*)RvaToAbs(prog, lookupTable[lookupTableIndex]);
+				HintNameTableEntry* hltEntry = (HintNameTableEntry*)RvaToAbsPhysical(prog, lookupTable[lookupTableIndex]);
 				addrTable[lookupTableIndex] = GetGlobalSymbol(hltEntry->name, lex->name);
-				//LogPrint("%s", hltEntry->name);
+				//Log("%s", hltEntry->name);
 			}
 		}
 	}
@@ -258,11 +267,11 @@ uintptr_t GetGlobalSymbol(char* name, char* ename) {
 	return 0;
 }
 
-PeProgram* PeLoad(char* file) {
+PeProgram* PeLoad(char* file, int flags, PageTableEntry* pagemap) {
 	File* f = FileOpen(file);
 
 	if (f == 0) {
-		LogPrint("File not found: %s", file);
+		Log("file not found: %s", file);
 		return 0;
 	}
 
@@ -271,31 +280,32 @@ PeProgram* PeLoad(char* file) {
 
 	FileReadAll(f, data);
 
+	prog->flags = flags;
+	prog->pagemap = pagemap;
 	prog->data = data;
 
-
 	if (!IsValidMzSignature(prog)) {
-		LogPrint("Invalid MZ signature (%x)", *data);
+		Log("invalid MZ signature (%x)", *data);
 		return 0;
 	}
 
 	prog->header = (PeHeader*)(prog->data + ((uint32_t*)prog->data)[0xF]);
 
 	if (!IsValidPeSignature(prog)) {
-		LogPrint("## Invalid PE signature (%x) ##", prog->header->signature);
+		Log("## Invalid PE signature (%x) ##", prog->header->signature);
 		return 0;
 	}
 
 	if (prog->header->machine != IMAGE_FILE_MACHINE_I386) {
-		LogPrint("## PE is not I386 ##");
+		Log("## PE is not I386 ##");
 		return 0;
 	}
 
-	//LogPrint("Image built for version %d.%d", prog->header->majorOperatingSystemVersion, prog->header->minorOperatingSystemVersion);
+	//Log("Image built for version %d.%d", prog->header->majorOperatingSystemVersion, prog->header->minorOperatingSystemVersion);
 	//PePrintHeaderInfo(prog);
 	
 	if (PeInitExecutable(prog)) {
-		LogPrint("## Error loading PE executable ##");
+		Log("## Error loading PE executable ##");
 		return 0;
 	}
 
@@ -306,7 +316,7 @@ PeProgram* PeLoad(char* file) {
 		int rv = PeLoadExe(prog);
 		if (rv != 0) return 0;
 	} else {
-		LogPrint("## PE unknown type ##");
+		Log("## PE unknown type ##");
 		return 0;
 	}
 
@@ -316,12 +326,14 @@ PeProgram* PeLoad(char* file) {
 int PeRun(PeProgram* prog) {
 	uintptr_t entryPoint = RvaToAbs(prog, prog->header->addressOfEntryPoint);
 	int (*entryPointFunc)(short, int) = (int(*)(short, int))entryPoint;
-	LogPrint("entry: %x", entryPoint);
+	Log("entry: %x", entryPoint);
 	int rv = entryPointFunc(0, 0);
 	return rv;
 }
 
 void PeInit() {
+	Log("initializing PE support");
+
 	maxGstItems = INITIAL_GST_SIZE;
 	globalSymbolTable = (PeExport*)MemoryAllocate(maxGstItems * sizeof(PeExport));
 	memset(globalSymbolTable, 0, maxGstItems * sizeof(PeExport));
@@ -334,5 +346,5 @@ void PeInit() {
 	debugSymbols = (DebugSymbol**)MemoryAllocate(maxLeItems * sizeof(DebugSymbol*));
 	memset(debugSymbols, 0, maxDebugSymbols * sizeof(DebugSymbol*));
 
-	LogPrint("PE");
+	Log("initialized PE support");
 }

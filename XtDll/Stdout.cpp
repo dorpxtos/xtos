@@ -1,12 +1,13 @@
 #include <stdio.h>
 #include <Syscalls.h>
 
-int putc(int c) {
-	XtPrintChar(c);
-	return c;
+#define stdout 0
+
+int putchar(int c) {
+	putc(c, stdout);
 }
 
 int puts(char* s) {
-	while (*s) putc(*s++);
+	while (*s) putchar(*s++);
 	return 0;
 }

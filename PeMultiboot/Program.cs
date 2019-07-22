@@ -102,7 +102,7 @@ namespace PeMultiboot
                 Console.WriteLine("Entry: 0x{0:X}", entryPointAddress + loadAddress);
                 Console.WriteLine("Data end: 0x{0:X}", dataEnd + loadAddress);
                 Console.WriteLine("Bss end: 0x{0:X}", bssEnd + loadAddress);
-                WriteMultibootRecord(file, entryPointAddress + loadAddress, loadAddress, dataEnd + loadAddress, bssEnd + loadAddress);
+                WriteMultibootRecord(file, peOptionalHeaderOffset, entryPointAddress, loadAddress);
             }
             catch (Exception e)
             {
@@ -112,24 +112,13 @@ namespace PeMultiboot
             Environment.Exit(0);
         }
 
-        private static void WriteMultibootRecord(FileStream file, uint entryPointAddress, uint loadAddress, uint dataEnd, uint bssEnd)
+        private static void WriteMultibootRecord(FileStream file, uint peOptionalHeaderOffset, uint entryPointAddress, uint loadAddress)
         {
             BinaryWriter writer = new BinaryWriter(file);
-            writer.BaseStream.Seek(0, SeekOrigin.Begin);
-            uint magic = 0x1BADB002;
-            uint flags =
-               1 << 0 |
-               1 << 1 |
-               1 << 16;
-            uint checksum = (uint)(-(0x1BADB002 + flags));
-            writer.Write(magic);
-            writer.Write(flags);
-            writer.Write(checksum);
-            writer.Write(loadAddress); // header_addr
-            writer.Write(loadAddress); // load_addr
-            writer.Write(dataEnd); // load_end_addr (data end)
-            writer.Write(bssEnd); // bss_end_addr
-            writer.Write(entryPointAddress); // entry_addr
+            writer.BaseStream.Seek(2, SeekOrigin.Begin);
+            writer.Write("BootFix By Carver Harrison");
+            writer.BaseStream.Seek(peOptionalHeaderOffset + 28, SeekOrigin.Begin);
+            writer.Write(loadAddress);
         }
 
         private static string ParseString(byte[] data)

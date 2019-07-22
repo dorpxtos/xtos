@@ -2,10 +2,28 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
+#include <Status.h>
+#include <Log.h>
 #include <ObjectManager.h>
 #include <MemoryAllocator.h>
+#include <PortableExecutable.h>
 #include <Device.h>
 #include <Driver.h>
+
+DriverObject* DriverLoad(char* name) {
+	DriverObject* driver;
+	PeProgram* prog = PeLoad(name, PELOAD_FLAG_INKERNEL, kernelPagemap);
+	DriverObCreate(name, "No Description Provided", &driver);
+	uintptr_t entryPoint = RvaToAbs(prog, prog->header->addressOfEntryPoint);
+	Status (*entryPointFunc)(DriverObject*, char*) = (Status(*)(DriverObject*, char*))entryPoint;
+	Log("%x", entryPointFunc);
+	int rv = entryPointFunc(driver, name);
+	if (rv != STATUS_SUCCESS) {
+		Log("Driver did not load successfully");
+		return NULL;
+	}
+	return driver;
+}
 
 Obj* DriverObCreate(char* name, char* description, DriverObject** driver) {
 	char* oname = (char*)MemoryAllocate(64);

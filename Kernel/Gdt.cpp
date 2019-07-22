@@ -5,52 +5,6 @@
 
 #define GDT_ENTRIES 8
 
-#pragma pack(push,1)
-struct GdtPointer {
-	uint16_t size;
-	uint32_t offset;
-};
-
-struct GdtEntry {
-	uint16_t limitLow;
-	uint16_t baseLow;
-	uint8_t baseMiddle;
-	uint8_t access;
-	uint8_t granularity;
-	uint8_t baseHigh;
-};
-
-struct Tss {
-	uint32_t link;
-	uint32_t esp0;
-	uint32_t ss0;
-	uint32_t esp1;
-	uint32_t ss1;
-	uint32_t esp2;
-	uint32_t ss2;
-	uint32_t cr3;
-	uint32_t eip;
-	uint32_t eflags;
-	uint32_t eax;
-	uint32_t ecx;
-	uint32_t edx;
-	uint32_t ebx;
-	uint32_t esp;
-	uint32_t ebp;
-	uint32_t esi;
-	uint32_t edi;
-	uint32_t es;
-	uint32_t cs;
-	uint32_t ss;
-	uint32_t ds;
-	uint32_t fs;
-	uint32_t gs;
-	uint32_t ldtr;
-	uint16_t trap;
-	uint16_t iomapBase;
-};
-#pragma pack(pop)
-
 const char* gdtEntryNames[] = {
 	"NULL",
 	"KCODE",
@@ -71,7 +25,7 @@ extern "C" {
 
 	Tss tss = {
 		0x0,
-		0xEFFFF0,
+		0xC0EFFFF0,
 		0x10
 	};
 
@@ -87,7 +41,7 @@ static void LoadTss() {
 
 void GdtDump() {
 	for (int i = 0; i < GDT_ENTRIES; i++) {
-		LogPrint("%s (%d) Base: %x_%x_%x Limit: %x Access: %b Gran: %b", gdtEntryNames[i], i, gdt[i].baseHigh, gdt[i].baseMiddle, gdt[i].baseLow, gdt[i].limitLow, gdt[i].access, gdt[i].granularity);
+		Log("%s (%d) Base: %x_%x_%x Limit: %x Access: %b Gran: %b", gdtEntryNames[i], i, gdt[i].baseHigh, gdt[i].baseMiddle, gdt[i].baseLow, gdt[i].limitLow, gdt[i].access, gdt[i].granularity);
 	}
 }
 
@@ -156,9 +110,11 @@ void GdtInit() {
 	gdt[7].granularity = 0b00000000;
 	gdt[7].baseHigh = (uint8_t)(((uint32_t)&tss & 0xff000000) / 0x1000000);
 
+	Log("loading gdt");
 	LoadGdt();
-	LogPrint("GDT");
+	Log("loaded gdt");
 	GdtDump();
+	Log("loading tss");
 	LoadTss();
-	LogPrint("TSS ok");
+	Log("loaded tss");
 }

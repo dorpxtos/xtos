@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
+#include <Utf8.h>
 #include <Colors.h>
 #include <Log.h>
 #include <Paging.h>
@@ -11,9 +12,13 @@
 #include <Device.h>
 #include <Driver.h>
 #include <TextMode.h>
+#include <Bochs.h>
+#include <Section.h>
 #include <Video.h>
 
 #include "InternalFont.h"
+
+#define VBEMODEINFO_PTR 0x9000
 
 extern "C" extern void SetVideo();
 
@@ -25,7 +30,7 @@ VideoLogObject* videoLog;
 
 bool useVideoLog = false;
 
-static int pow2(int x) {
+static inline int pow2(int x) {
 	int rv = 0;
 	for (int i = x; i >= 0; i--) {
 		rv *= x;
@@ -43,14 +48,13 @@ DeviceObject* DisplayObCreate(char* name, int w, int h, int b, uintptr_t f, Driv
 	(*display)->colors = pow2(b);
 	(*display)->framebuffer = (uint8_t*)f;
 	int size = w * h * (b / 8);
-	for (int i = 0; i < (size + (size / 2)) / PAGE_SIZE; i++) {
-		MapPage(kernelPagemap, f + i * PAGE_SIZE, f + i * PAGE_SIZE, 0x3);
-	}
+	SectionCreate((uintptr_t)((*display)->framebuffer), (uintptr_t)((*display)->framebuffer), size, 0x3, SECTION_FLAG_ALWAYS_LOADED);
+	(*display)->prebuffer = (uint8_t*)MemoryAllocate(h * w * (b / 8));
 
 	return dev;
 }
 
-int VideoPutPixel(DisplayObject* display, int x, int y, int color) {
+int VideoSetPixel(DisplayObject* display, int x, int y, int color) {
 	if (!display) return -1;
 	
 	if (display->bpp == 24) {
@@ -63,23 +67,36 @@ int VideoPutPixel(DisplayObject* display, int x, int y, int color) {
 	return 0;
 }
 
-int VideoPutChar(DisplayObject* display, char c, int x, int y, int fg, int bg, uint8_t* font, int wi, int hi) {
+int VideoPreBufferSetPixel(DisplayObject* display, int x, int y, int color) {
+	if (!display) return -1;
+
+	if (display->bpp == 24) {
+		int p = (y * display->width + x) * (display->bpp / 8);
+		display->prebuffer[p] = color & 0xFF;
+		display->prebuffer[p + 1] = (color >> 8) & 0xFF;
+		display->prebuffer[p + 2] = (color >> 16) & 0xFF;
+	}
+
+	return 0;
+}
+
+int VideoPutGlyph(DisplayObject* display, int c, int x, int y, int fg, int bg, uint8_t font[][8], int wi, int hi) {
 	// For every row in the font height
 	for (char i = 0; i < hi; i++) {
 		// Let fl = the bitmap of the character that is going to be written
-		unsigned short fl = font[(c*hi + i)*(wi / 8)];
+		unsigned short fl = font[c][i];
 		// For every column in the font width
 		for (char j = 0; j < wi; j++) {
 			// Let fc = The pixel of the bitmap that is going to be written
-			unsigned short fc = (fl >> (wi - j)) & 1;
+			unsigned short fc = (fl >> j) & 1;
 
 			// Check if the pixel is on or not
-			if (fc == 1) {
+			if (fc) {
 				// It is on
-				VideoPutPixel(display, x + j, y + i, fg);
+				VideoSetPixel(display, x + j, y + i, fg);
 			} else {
 				// It is not on
-				VideoPutPixel(display, x + j, y + i, bg);
+				VideoSetPixel(display, x + j, y + i, bg);
 			}
 		}
 	}
@@ -87,9 +104,9 @@ int VideoPutChar(DisplayObject* display, char c, int x, int y, int fg, int bg, u
 	return 0;
 }
 
-int VideoPutString(DisplayObject* display, char* s, int x, int y, int fg, int bg, uint8_t* font, int wi, int hi) {
+int VideoPutGlyphs(DisplayObject* display, char* s, int x, int y, int fg, int bg, uint8_t font[][8], int wi, int hi) {
 	for (int i = 0; s[i]; i++) {
-		VideoPutChar(display, s[i], x + i * wi, y, fg, bg, font, wi, hi);
+		VideoPutGlyph(display, s[i], x + i * wi, y, fg, bg, font, wi, hi);
 	}
 
 	return 0;
@@ -98,19 +115,20 @@ int VideoPutString(DisplayObject* display, char* s, int x, int y, int fg, int bg
 int VideoFillScreen(DisplayObject* display, int color) {
 	for (int y = 0; y < display->height; y++) {
 		for (int x = 0; x < display->width; x++) {
-			VideoPutPixel(display, x, y, color);
+			VideoSetPixel(display, x, y, color);
 		}
 	}
 
 	return 0;
 }
 
-Obj* FontObCreate(char* name, uint8_t* bitmap, int width, int height, FontObject** font) {
+Obj* FontObCreate(char* name, uint8_t bitmap[][8], FontMapping* mapping, int width, int height, FontObject** font) {
 	char* oname = (char*)MemoryAllocate(64);
 	strcpy(oname, "Fonts/");
 	strcpy(oname + strlen("Fonts/"), name);
 	Obj* o = ObCreate(oname, "Font", sizeof(FontObject), (void**)font);
-	(*font)->bitmap = bitmap;
+	(*font)->bitmap = (uint8_t**)bitmap;
+	(*font)->mapping = (FontMapping*)mapping;
 	(*font)->width = width;
 	(*font)->height = height;
 	return o;
@@ -139,7 +157,13 @@ int VideoLogClear(VideoLogObject* log) {
 	return 0;
 }
 
-int VideoLogPrintChar(VideoLogObject* log, char c) {
+int rv;
+
+int VideoLogPrintChar(VideoLogObject* log, utf8_int32_t c) {
+	_asm {
+		mov eax, [esp]
+		mov rv, eax
+	}
 	if (!log) return -1;
 
 	if (c == '\n') {
@@ -152,8 +176,16 @@ int VideoLogPrintChar(VideoLogObject* log, char c) {
 		VideoLogClear(log);
 		return 0;
 	}
+	
+	int pc = 0xFFFD;
+	for (int i = 0; log->font->mapping[i].codepoint != 0xDEADBEEF; i++) {
+		if (log->font->mapping[i].codepoint == c) {
+			pc = log->font->mapping[i].glyph;
+			break;
+		}
+	}
 
-	VideoPutChar(log->display, c, log->col * log->font->width, log->row * log->font->height, log->fg, log->bg, log->font->bitmap, log->font->width, log->font->height);
+	VideoPutGlyph(log->display, pc, log->col * log->font->width, log->row * log->font->height, log->fg, log->bg, (uint8_t(*)[8])log->font->bitmap, log->font->width, log->font->height);
 	log->col++;
 
 	if (log->col > log->cols) {
@@ -161,26 +193,49 @@ int VideoLogPrintChar(VideoLogObject* log, char c) {
 		log->row++;
 	}
 
+	if (log->row > log->rows) {
+		VideoLogClear(log);
+	}
+
 	return 0;
 }
 
-int VideoLogPrintString(VideoLogObject* log, char* s) {
-	while (*s) VideoLogPrintChar(log, *s++);
+int VideoLogCharUtf8(VideoLogObject* log, char* s) {
+	utf8_int32_t c;
+	utf8codepoint(s, &c);
+	VideoLogPrintChar(log, c);
 	return 0;
+}
+
+int VideoLogString(VideoLogObject* log, char* s) {
+	while (*s) {
+		VideoLogCharUtf8(log, s);
+		s++;
+	}
+	return 0;
+}
+
+IoStatus VideoDriverUpdate(IoStack* req) {
+	// TODO: Something with the framebuffer
+	return IOSTATUS_SUCCESS;
 }
 
 void VideoInit() {
-	VbeModeInfo* vmi = (VbeModeInfo*)0x9000;
-	LogPrint("fb=%x", &vmi->framebuffer);
-	DriverObCreate("Vga", "VGA Driver", &vgaDriver);
+	Log("setting video mode");
 	SetVideo();
+	Log("set video mode");
+	VbeModeInfo* vmi = (VbeModeInfo*)VBEMODEINFO_PTR;
+	Log("framebuffer=%80X", vmi->framebuffer);
+	DriverObCreate("Vga", "VGA Driver", &vgaDriver);
+	DriverObRegisterFunction(vgaDriver, DRIVER_FUNCTION_VI_UPDATE, &VideoDriverUpdate);
 	DisplayObCreate("Vga", vmi->width, vmi->height, vmi->bpp, vmi->framebuffer, vgaDriver, &mainDisplay);
-	FontObCreate("Internal", internalFontBitmap, INTERNAL_FONT_WIDTH, INTERNAL_FONT_HEIGHT, &internalFont);
+	FontObCreate("Internal", internalFontBitmap, internalFontCharmap, INTERNAL_FONT_WIDTH, INTERNAL_FONT_HEIGHT, &internalFont);
 	DriverObCreate("VideoLog", "Video Log Driver", &videoLogDriver);
-	VideoLogObCreate("VgaLog", mainDisplay, internalFont, WHITE, BLACK, &videoLog);
+	VideoLogObCreate("VgaLog", mainDisplay, internalFont, WHITE, NAVYBLUE, &videoLog);
 	VideoFillScreen(mainDisplay, BLACK);
-	VideoLogPrintString(videoLog, "The quick brown fox jumps over the lazy dog");
+	VideoLogString(videoLog, "The quick brown fox jumps over the lazy dog");
 	useVideoLog = true;
 	useTextMode = false;
-	LogPrint("Video");
+	VideoLogClear(videoLog);
+	Log("Video");
 }

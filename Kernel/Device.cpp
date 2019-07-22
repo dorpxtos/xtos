@@ -15,6 +15,7 @@ Obj* DeviceObCreate(char* name, uint32_t type, size_t esize, DriverObject* drive
 	(*dev)->type = type;
 	(*dev)->driver = driver;
 	(*dev)->extendedSize = esize;
+	(*dev)->extendedData = (void*)((char*)(*dev) + sizeof(DeviceObject));
 
 	DeviceObject* cdev = driver->device;
 

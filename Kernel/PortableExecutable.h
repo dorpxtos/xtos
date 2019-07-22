@@ -1,6 +1,10 @@
 #pragma once
 #include <stddef.h>
 #include <stdint.h>
+#include <stdbool.h>
+#include <Paging.h>
+
+#define PELOAD_FLAG_INKERNEL 0b000001
 
 #pragma pack(push, 1)
 struct DataDirectory {
@@ -140,9 +144,12 @@ struct CoffSymbol {
 struct PeProgram {
 	PeHeader* header;
 	uint8_t* data;
+	uint8_t* vm;
 	ExportDirectoryTable* edata;
+	PageTableEntry* pagemap;
 	char* name;
 	uintptr_t top;
+	int flags;
 };
 
 struct DebugSymbol {
@@ -154,7 +161,22 @@ struct DebugSymbol {
 	PeProgram* prog;
 };
 
-PeProgram* PeLoad(char*);
+extern PeExport* globalSymbolTable;
+extern int maxGstItems;
+extern PeProgram** loadedExecutables;
+extern int maxLeItems;
+extern DebugSymbol** debugSymbols;
+extern int maxDebugSymbols;
+
+inline uintptr_t RvaToAbs(PeProgram* prog, uintptr_t addr) {
+	return (uintptr_t)(prog->header->imageBase + addr);
+}
+
+inline uintptr_t RvaToAbsPhysical(PeProgram* prog, uintptr_t addr) {
+	return (uintptr_t)(prog->vm + addr);
+}
+
+PeProgram* PeLoad(char*, int, PageTableEntry*);
 int PeRun(PeProgram*);
 int PeReadExportTable(PeProgram*);
 int PeReadImportTable(PeProgram*);

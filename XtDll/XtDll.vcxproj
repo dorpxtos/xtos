@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -21,38 +21,38 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{537516A2-8488-4162-919D-1D8CAF76E735}</ProjectGuid>
     <RootNamespace>XtDll</RootNamespace>
-    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
-    <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.props" />
+    <Import Project="..\Ext\nasm.props" />
   </ImportGroup>
   <ImportGroup Label="Shared">
   </ImportGroup>
@@ -77,7 +77,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <Optimization>Disabled</Optimization>
+      <Optimization>MinSpace</Optimization>
       <SDLCheck>true</SDLCheck>
       <StringPooling>true</StringPooling>
       <MinimalRebuild>false</MinimalRebuild>
@@ -85,7 +85,8 @@
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <CompileAs>CompileAsC</CompileAs>
-      <AdditionalIncludeDirectories>C:\Users\Carver Harrison\Documents\Visual Studio 2015\Projects\XtOS\XtDll;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)XtDll;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>/arch:SSE %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <AdditionalDependencies />
@@ -94,7 +95,7 @@
       <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <EntryPointSymbol>DllMain</EntryPointSymbol>
-      <BaseAddress>0x30020000</BaseAddress>
+      <BaseAddress>0xa00000</BaseAddress>
       <ModuleDefinitionFile>
       </ModuleDefinitionFile>
     </Link>
@@ -139,24 +140,61 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="DeclSpec.h" />
+    <ClInclude Include="errno.h" />
+    <ClInclude Include="File.h" />
+    <ClInclude Include="Gdi.h" />
+    <ClInclude Include="Graphics.h" />
     <ClInclude Include="Handle.h" />
+    <ClInclude Include="Liballoc.h" />
+    <ClInclude Include="LodePNG.h" />
+    <ClInclude Include="math.h" />
+    <ClInclude Include="Parson.h" />
+    <ClInclude Include="Printf.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="stdio.h" />
+    <ClInclude Include="stdlib.h" />
     <ClInclude Include="string.h" />
     <ClInclude Include="Syscalls.h" />
+    <ClInclude Include="sys\ioctl.h" />
+    <ClInclude Include="sys\param.h" />
+    <ClInclude Include="sys\types.h" />
+    <ClInclude Include="termios.h" />
+    <ClInclude Include="unistd.h" />
     <ClInclude Include="Xt.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="XtDll.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Credits.cpp" />
+    <ClCompile Include="File.cpp" />
+    <ClCompile Include="Floats.cpp" />
+    <ClCompile Include="Gdi.cpp" />
+    <ClCompile Include="Liballoc.cpp" />
+    <ClCompile Include="LiballocGlue.cpp" />
+    <ClCompile Include="LodePNG.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Math.cpp" />
+    <ClCompile Include="Parson.cpp" />
+    <ClCompile Include="Printf.cpp" />
     <ClCompile Include="Stdout.cpp" />
     <ClCompile Include="String.cpp" />
     <ClCompile Include="Syscalls.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <NASM Include="aullrem.asm">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">-fwin32 %(AdditionalOptions)</AdditionalOptions>
+    </NASM>
+    <NASM Include="ftol.asm">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">-fwin32 %(AdditionalOptions)</AdditionalOptions>
+    </NASM>
+    <NASM Include="Syscall.asm">
+      <FileType>Document</FileType>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">-fwin32 %(AdditionalOptions)</AdditionalOptions>
+    </NASM>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.targets" />
+    <Import Project="..\Ext\nasm.targets" />
   </ImportGroup>
 </Project>

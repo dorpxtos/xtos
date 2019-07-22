@@ -36,3 +36,21 @@ inline uint16_t inw(uint16_t port) {
 	}
 	return returnValue;
 }
+
+inline void outl(uint16_t port, uint32_t val) {
+	_asm {
+		mov dx, [port]
+		mov eax, [val]
+		out dx, eax
+	}
+}
+
+inline uint32_t inl(uint16_t port) {
+	uint16_t returnValue;
+	_asm {
+		mov dx, [port]
+		in eax, dx
+		mov dword ptr[returnValue], eax
+	}
+	return returnValue;
+}

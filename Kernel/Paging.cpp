@@ -5,15 +5,56 @@ Based on Mintsuki's AMAZING pmm.c and vmm.c.
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
+#include <Multiboot.h>
 #include <Log.h>
 #include <MemoryAllocator.h>
-#include <Multiboot.h>
+#include <ObjectManager.h>
+#include <Section.h>
 #include <Paging.h>
 
-PageTableEntry* kernelPagemap = (PageTableEntry*)0x800000;
+PageTableEntry* initialKernelPagemap = (PageTableEntry*)0x800000;
+PageTableEntry* kernelPagemap;
+
+#define MBITMAP_FULL ((0x4000000 / PAGE_SIZE) / 32)
+static size_t bitmap_full = MBITMAP_FULL;
+#define BASE (0x1000000 / PAGE_SIZE)
+
+static uint32_t* mem_bitmap;
+static uint32_t initial_bitmap[MBITMAP_FULL];
+static uint32_t* tmp_bitmap;
+
+bool useHigherHalf = false;
+
+void IdentityMapKernel(PageTableEntry* pm) {
+	for (int i = 0; i < IDENTITY_MAP_SIZE; i++) {
+		size_t addr = i * PAGE_SIZE;
+		MapPage(pm, addr, KERNEL_MEMORY_BASE + addr, 0x03);
+	}
+}
+
+PageTableEntry* CreatePagemap() {
+	PageTableEntry* pm = (PageTableEntry*)PmmAlloc(1);
+	Obj* so = ObFind("Sections");
+	ObjDirectory* dir = (ObjDirectory*)so->data;
+	ObjDirectoryNode* dirnode = dir->child;
+	while (dirnode) {
+		SectionObject* section = (SectionObject*)dirnode->obj->data;
+		Log("SecMap [%80X -> %80X %d]", section->physicalBase, section->virtualBase, section->size);
+		if (section->sectionFlags & SECTION_FLAG_ALWAYS_LOADED) {
+			for (int i = 0; i < (section->size + (section->size / 2)) / PAGE_SIZE; i++) {
+				MapPage(pm, section->physicalBase + i * PAGE_SIZE, section->virtualBase + i * PAGE_SIZE, section->pageFlags);
+			}
+		}
+		dirnode = dirnode->next;
+	}
+	Log("pagemap=%x", pm);
+	return pm;
+}
 
 /* map physaddr -> virtaddr using pd pointer */
-void MapPage(PageTableEntry* pd, size_t phys_addr, size_t virt_addr, size_t flags) {
+void MapPage(PageTableEntry* pdt, size_t phys_addr, size_t virt_addr, size_t flags) {
+	PageTableEntry* pd = (PageTableEntry*)((uintptr_t)pdt + KERNEL_MEMORY_BASE);
+
 	/* Calculate the indices in the various tables using the virtual address */
 	size_t i;
 
@@ -21,18 +62,31 @@ void MapPage(PageTableEntry* pd, size_t phys_addr, size_t virt_addr, size_t flag
 	size_t pt_entry = (virt_addr & ((size_t)0x3ff << 12)) >> 12;
 
 	PageTableEntry* pt;
+	PageTableEntry* pthh;
 
 	if (pd[pd_entry] & 0x1) {
 		pt = (PageTableEntry*)(pd[pd_entry] & 0xfffff000);
+		if (useHigherHalf) {
+			pthh = (PageTableEntry*)((uintptr_t)pt + KERNEL_MEMORY_BASE);
+		} else {
+			pthh = pt;
+		}
 	}
 	else {
 		/* Allocate a page for the pt. */
 		pt = (PageTableEntry*)PmmAlloc(1);
 
+		if (useHigherHalf) {
+			pthh = (PageTableEntry*)((uintptr_t)pt + KERNEL_MEMORY_BASE);
+		}
+		else {
+			pthh = pt;
+		}
+
 		/* Zero page */
 		for (i = 0; i < PAGE_TABLE_ENTRIES; i++) {
 			/* Zero each entry */
-			pt[i] = 0;
+			pthh[i] = 0;
 		}
 
 		/* Present + writable + user (0b111) */
@@ -41,8 +95,7 @@ void MapPage(PageTableEntry* pd, size_t phys_addr, size_t virt_addr, size_t flag
 
 	/* Set the entry as present and point it to the passed physical address */
 	/* Also set the specified flags */
-	pt[pt_entry] = (PageTableEntry)(phys_addr | flags);
-	return;
+	pthh[pt_entry] = (PageTableEntry)(phys_addr | flags);
 }
 
 int UnmapPage(PageTableEntry* pd, size_t virt_addr) {
@@ -51,6 +104,7 @@ int UnmapPage(PageTableEntry* pd, size_t virt_addr) {
 	size_t pt_entry = (virt_addr & ((size_t)0x3ff << 12)) >> 12;
 
 	PageTableEntry* pt;
+	PageTableEntry* pthh;
 
 	/* Get reference to the various tables in sequence. Return -1 if one of the tables is not present,
 	* since we cannot unmap a virtual address if we don't know what it's mapped to in the first place */
@@ -61,8 +115,15 @@ int UnmapPage(PageTableEntry* pd, size_t virt_addr) {
 		return -1;
 	}
 
+	if (useHigherHalf) {
+		pthh = (PageTableEntry*)((uintptr_t)pt + KERNEL_MEMORY_BASE);
+	}
+	else {
+		pthh = pt;
+	}
+
 	/* Unmap entry */
-	pt[pt_entry] = 0;
+	pthh[pt_entry] = 0;
 
 	return 0;
 }
@@ -74,6 +135,7 @@ int RemapPage(PageTableEntry* pd, size_t virt_addr, size_t flags) {
 	size_t pt_entry = (virt_addr & ((size_t)0x3ff << 12)) >> 12;
 
 	PageTableEntry* pt;
+	PageTableEntry* pthh;
 
 	/* Get reference to the various tables in sequence. Return -1 if one of the tables is not present,
 	* since we cannot unmap a virtual address if we don't know what it's mapped to in the first place */
@@ -84,8 +146,15 @@ int RemapPage(PageTableEntry* pd, size_t virt_addr, size_t flags) {
 		return -1;
 	}
 
+	if (useHigherHalf) {
+		pthh = (PageTableEntry*)((uintptr_t)pt + KERNEL_MEMORY_BASE);
+	}
+	else {
+		pthh = pt;
+	}
+
 	/* Update flags */
-	pt[pt_entry] = (pt[pt_entry] & 0xfffff000) | flags;
+	pthh[pt_entry] = (pthh[pt_entry] & 0xfffff000) | flags;
 
 	return 0;
 }
@@ -94,25 +163,21 @@ int RemapPage(PageTableEntry* pd, size_t virt_addr, size_t flags) {
 /* Then use the e820 to map all the available memory (saves on allocation time and it's easier) */
 /* The latter only applies to x86_64 */
 void VmmInit(void) {
-	size_t i;
-
-	for (i = 0; i < (0x10000000 / PAGE_SIZE); i++) {
-		size_t addr = i * PAGE_SIZE;
-		MapPage(kernelPagemap, addr, addr, 0x03);
-		//LogPrint("MapPage(%x, %x, %x, %x)", kernelPagemap, addr, addr, 0x03);
+	kernelPagemap = (PageTableEntry*)PmmAlloc(10);
+	Log("creating new pagemap");
+	for (int i = 0x10; i < 0x9000000 / PAGE_SIZE; i++) {
+		int addr = i * PAGE_SIZE;
+		MapPage(kernelPagemap, addr, KERNEL_MEMORY_BASE + addr, 0x03);
 	}
-
-	LogPrint("VMM");
+	Log("loading new pagemap");
+	_asm {
+		mov eax, kernelPagemap
+		mov cr3, eax
+	}
+	Log("loaded new pagemap");
+	useHigherHalf = true;
+	Log("vmm initialized");
 }
-
-
-#define MBITMAP_FULL ((0x4000000 / PAGE_SIZE) / 32)
-static size_t bitmap_full = MBITMAP_FULL;
-#define BASE (0x1000000 / PAGE_SIZE)
-
-static uint32_t *mem_bitmap;
-static uint32_t initial_bitmap[MBITMAP_FULL];
-static uint32_t *tmp_bitmap;
 
 static int ReadBitmap(size_t i) {
 	size_t which_entry = i / 32;
@@ -129,8 +194,6 @@ static void WriteBitmap(size_t i, int val) {
 		mem_bitmap[which_entry] |= (1 << offset);
 	else
 		mem_bitmap[which_entry] &= ~(1 << offset);
-
-	return;
 }
 
 static void BitmapRealloc(void) {
@@ -153,8 +216,6 @@ static void BitmapRealloc(void) {
 	mem_bitmap = tmp;
 
 	MemoryFree((void*)tmp_bitmap);
-
-	return;
 }
 
 /* Populate bitmap using e820 data. */
@@ -167,8 +228,8 @@ void PmmInit(void) {
 
 	mem_bitmap = initial_bitmap;
 
-	if (!(tmp_bitmap = (uint32_t*)MemoryAllocate(bitmap_full * sizeof(uint32_t)))) {
-		LogPrint("tmp_bitmap failed to init");
+	if (!(tmp_bitmap = KERNEL_MEMORY_BASE + (uint32_t*)MemoryAllocate(bitmap_full * sizeof(uint32_t)))) {
+		Log("tmp_bitmap failed to init");
 		for (;;);
 	}
 
@@ -178,13 +239,13 @@ void PmmInit(void) {
 
 
 	// Multiboot memory map
-	MultibootMemoryMap* memoryMap = (MultibootMemoryMap*)multibootInfo->mmap_addr;
-	LogPrint("MM addr=%X size=%X", multibootInfo->mmap_addr, multibootInfo->mmap_length);
+	MultibootMemoryMap* memoryMap = (MultibootMemoryMap*)(KERNEL_MEMORY_BASE + multibootInfo->mmap_addr);
+	Log("MM addr=%X size=%X", multibootInfo->mmap_addr, multibootInfo->mmap_length);
 	
 	for (i = 0; memoryMap[i].type; i++) {
 		size_t j;
 
-		LogPrint("MM %x: type: %x addr: %80x%80x size: %80x%80x", i, memoryMap[i].type, memoryMap[i].base_addr_high, memoryMap[i].base_addr_low, memoryMap[i].len_high, memoryMap[i].len_low);
+		Log("MM %x: type: %x addr: %80x%80x size: %80x%80x", i, memoryMap[i].type, memoryMap[i].base_addr_high, memoryMap[i].base_addr_low, memoryMap[i].len_high, memoryMap[i].len_low);
 
 		if (memoryMap[i].base_addr_high || memoryMap[i].len_high)
 			continue;
@@ -211,11 +272,11 @@ void PmmInit(void) {
 		}
 	}
 
-	LogPrint("PMM");
-	return;
+	Log("pmm initialized");
 }
 
 /* Allocate physical memory. */
+/* NOTE: THIS RETURNS THE _PHYSICAL_ ADDRESS, NOT THE VIRTUAL ONE! */
 void* PmmAlloc(size_t pg_count) {
 	/* Allocate contiguous free pages. */
 	size_t counter = 0;
@@ -230,6 +291,9 @@ void* PmmAlloc(size_t pg_count) {
 		if (counter == pg_count)
 			goto found;
 	}
+
+	Log("FAILURE IN PMMALLOC!!!!!");
+
 	return (void*)0;
 
 found:
@@ -250,6 +314,4 @@ void PmmFree(void* ptr, size_t pg_count) {
 	for (i = start; i < (start + pg_count); i++) {
 		WriteBitmap(i, 0);
 	}
-
-	return;
 }

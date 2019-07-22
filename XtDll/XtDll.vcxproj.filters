@@ -36,6 +36,51 @@
     <ClInclude Include="Handle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Parson.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="File.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="unistd.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="math.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="errno.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Printf.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="stdlib.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Gdi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Liballoc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sys\param.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="termios.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sys\ioctl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sys\types.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LodePNG.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="XtDll.rc">
@@ -55,5 +100,46 @@
     <ClCompile Include="Stdout.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Printf.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Parson.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="File.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Floats.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Math.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Gdi.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Liballoc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LiballocGlue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Credits.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LodePNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <NASM Include="Syscall.asm">
+      <Filter>Source Files</Filter>
+    </NASM>
+    <NASM Include="ftol.asm">
+      <Filter>Source Files</Filter>
+    </NASM>
+    <NASM Include="aullrem.asm">
+      <Filter>Source Files</Filter>
+    </NASM>
   </ItemGroup>
 </Project>

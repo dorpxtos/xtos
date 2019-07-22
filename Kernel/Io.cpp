@@ -36,5 +36,5 @@ int IoCallDriver(DeviceObject* device, IoRequest* req) {
 }
 
 void IoInit() {
-	LogPrint("IO");
+	Log("IO Manager initialized");
 }

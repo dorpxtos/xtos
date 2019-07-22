@@ -1,30 +1,48 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <MemoryAllocator.h>
+#include <Log.h>
 #include <string.h>
 
-char islower(char c) {
+int islower(int c) {
 	return c >= 'a' && c <= 'z';
 }
 
-char isupper(char c) {
+int isupper(int c) {
 	return c >= 'A' && c <= 'Z';
 }
 
-char isdigit(char c) {
+int isdigit(int c) {
 	return c >= '0' && c <= '9';
 }
 
-char isalpha(char c) {
+int isalpha(int c) {
 	return islower(c) || isupper(c);
 }
 
-char isalnum(char c) {
+int isalnum(int c) {
 	return isalpha(c) || isdigit(c);
 }
 
-char toupper(char c) {
+int isspace(int c) {
+	return (c == ' ' || c == '\t' || c == '\n' || c == '\v' || c == '\f' || c == '\r');
+}
+
+int isprint(int c) {
+	return (c > 0x1f && c != '\d');
+}
+
+int isxdigit(int c) {
+	return (isdigit(c) || (c >= 'A' && c <= 'F') || (c >= 'a' && c <= 'f'));
+}
+
+int toupper(int c) {
 	if (islower(c)) return c - 'a' + 'A';
+	else return c;
+}
+
+int tolower(int c) {
+	if (isupper(c)) return c - 'A' + 'a';
 	else return c;
 }
 
@@ -78,6 +96,22 @@ void* memset64(void* destination, int value, size_t count) {
 	return destination;
 }
 
+int memcmp(const void* s1, const void* s2, size_t n) {
+	uint8_t* a1 = (uint8_t*)s1;
+	uint8_t* a2 = (uint8_t*)s2;
+	uint8_t u1, u2;
+
+	for (; n--; a1++, a2++) {
+		u1 = *(uint8_t*)a1;
+		u2 = *(uint8_t*)a2;
+		if (u1 != u2) {
+			return (u1 - u2);
+		}
+	}
+	
+	return 0;
+}
+
 void strrev(char* str) {
 	size_t length = strlen(str);
 	size_t i;
@@ -122,6 +156,18 @@ char* strchr(const char* p, int ch) {
 	}
 }
 
+char* strrchr(const char* cp, int ch) {
+	char* save;
+	char c;
+
+	for (save = (char*)0; (c = *cp); cp++) {
+		if (c == ch)
+			save = (char*)cp;
+	}
+
+	return save;
+}
+
 char* strdup(const char* s) {
 	size_t len = strlen(s) + 1;
 	void* n = MemoryAllocate(len);
@@ -132,6 +178,36 @@ char* strdup(const char* s) {
 char* strcpy(char* dst, const char* src) {
 	memcpy(dst, src, strlen(src));
 	return dst;
+}
+
+char* strncpy(char* dst, const char* src, size_t n) {
+	memcpy(dst, src, n);
+	return dst;
+}
+
+char* strcat(char* dest, const char* src) {
+	strcpy(dest + strlen(dest), src);
+	return dest;
+}
+
+size_t strcspn(const char* s1, const char* s2) {
+	const char* p, *spanp;
+	char c, sc;
+
+	/*
+	 * Stop as soon as we find any character from s2.  Note that there
+	 * must be a NUL in s2; it suffices to stop when we find that, too.
+	 */
+	for (p = s1;;) {
+		c = *p++;
+		spanp = s2;
+		do {
+			if ((sc = *spanp++) == c)
+				return (p - 1 - s1);
+		} while (sc != 0);
+	}
+
+	return 0;
 }
 
 static const char* ITOA_NUMBERS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz+/-_.,";

@@ -10,3 +10,5 @@
 *.map
 *.log
 *.ignore
+XtOS.7z
+genfontmap.py

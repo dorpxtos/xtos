@@ -1,0 +1,426 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="stl\_tolower.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\_toupper.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\atomic.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\cerr.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\cin.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\clog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\cond.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\cout.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\cthread.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\dllmain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\excptptr.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\filesys.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\fiopen.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\future.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\instances.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\iomanip.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\ios.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\iosptrs.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\iostream.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\locale.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\locale_implib_pure.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\locale0.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\locale0_implib.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\mpiostream.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\multprec.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\mutex.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\nothrow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\ppltasks.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\raisehan.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\sharedmutex.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\stdhndlr.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\stdthrow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\syserror.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\taskscheduler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\thread0.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\uncaught.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\ushcerr.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\ushcin.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\ushclog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\ushcout.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\ushiostr.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\wcerr.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\wcin.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\wclog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\wcout.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\winapinls.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\wiostrea.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\wlocale.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xalloc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xcosh.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xdateord.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xdint.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xdnorm.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xdscale.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xdtento.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xdtest.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xdunscal.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xexp.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xfcosh.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xfdint.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xfdnorm.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xfdscale.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xfdtento.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xfdtest.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xfdunsca.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xferaise.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xfexp.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xfprec.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xfsinh.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xfvalues.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xgetwctype.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xlcosh.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xldint.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xldnorm.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xldscale.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xldtento.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xldtest.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xldunsca.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xlexp.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xlgamma.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xlocale.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xlock.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xlpoly.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xlprec.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xlsinh.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xlvalues.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xmbtowc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xmtx.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xnotify.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xonce.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xpoly.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xprec.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xrngabort.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xrngdev.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xsinh.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xstod.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xstof.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xstoflt.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xstol.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xstold.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xstoll.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xstopfx.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xstoul.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xstoull.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xstoxflt.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xstrcoll.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xstrxfrm.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xthrow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xtime.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xtowlower.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xtowupper.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xvalues.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xwcscoll.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xwcsxfrm.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xwctomb.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xwstod.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xwstof.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xwstoflt.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xwstold.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xwstopfx.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stl\xwstoxfl.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="stl\filesys.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="stl\generics.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="stl\primitives.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="stl\wrapwin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="stl\xmath.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="stl\xmtx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="stl\xxcctype.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="stl\xxdftype.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="stl\xxfftype.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="stl\xxlftype.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="stl\xxstod.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="stl\xxwctype.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="stl\xxxdtent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="stl\xxxprec.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

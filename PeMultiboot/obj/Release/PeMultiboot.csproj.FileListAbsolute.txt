@@ -4,3 +4,9 @@ C:\Users\Carver Harrison\documents\visual studio 2015\Projects\XtOS\PeMultiboot\
 C:\Users\Carver Harrison\documents\visual studio 2015\Projects\XtOS\PeMultiboot\obj\Release\PeMultiboot.csprojResolveAssemblyReference.cache
 C:\Users\Carver Harrison\documents\visual studio 2015\Projects\XtOS\PeMultiboot\obj\Release\PeMultiboot.exe
 C:\Users\Carver Harrison\documents\visual studio 2015\Projects\XtOS\PeMultiboot\obj\Release\PeMultiboot.pdb
+C:\Users\Carver Harrison\Documents\Visual Studio 2017\Projects\XtOS\PeMultiboot\obj\Release\PeMultiboot.exe
+C:\Users\Carver Harrison\Documents\Visual Studio 2017\Projects\XtOS\PeMultiboot\obj\Release\PeMultiboot.pdb
+C:\Users\Carver Harrison\Documents\Visual Studio 2017\Projects\XtOS\PeMultiboot\bin\Release\PeMultiboot.exe.config
+C:\Users\Carver Harrison\Documents\Visual Studio 2017\Projects\XtOS\PeMultiboot\bin\Release\PeMultiboot.exe
+C:\Users\Carver Harrison\Documents\Visual Studio 2017\Projects\XtOS\PeMultiboot\bin\Release\PeMultiboot.pdb
+C:\Users\Carver Harrison\Documents\Visual Studio 2017\Projects\XtOS\PeMultiboot\obj\Release\PeMultiboot.csproj.CoreCompileInputs.cache

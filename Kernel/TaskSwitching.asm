@@ -4,12 +4,12 @@
 .DATA
 .CODE
 
-new_cr3 DD 0
+newCr3 DD 0
 
 TaskSpinup PROC
 	mov ebx, [esp+4]
 	mov eax, [esp+8]
-	mov [new_cr3], eax
+	mov [newCr3], eax
 	mov eax, [ebx]
 	mov ecx, [ebx+8]
 	mov edx, [ebx+12]
@@ -32,7 +32,7 @@ TaskSpinup PROC
 	push [ebx+40]
 	pop ds
 	push [ebx+4]
-	mov ebx, [new_cr3]
+	mov ebx, [newCr3]
 	mov cr3, ebx
 	pop ebx
 

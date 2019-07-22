@@ -10,11 +10,11 @@
 DriverObject* nullDriver;
 DeviceObject* nullDevice;
 
-int NullDevRead(IoStack* req) {
+IoStatus NullDevRead(IoStack* req) {
 	return IOSTATUS_SUCCESS;
 }
 
-int NullDevWrite(IoStack* req) {
+IoStatus NullDevWrite(IoStack* req) {
 	return IOSTATUS_SUCCESS;
 }
 
@@ -23,5 +23,5 @@ void NullDevInit() {
 	IoCreateDevice("Null", DEVICE_TYPE_NULL, 0, nullDriver, &nullDevice);
 	DriverObRegisterFunction(nullDriver, DRIVER_FUNCTION_READ, &NullDevRead);
 	DriverObRegisterFunction(nullDriver, DRIVER_FUNCTION_WRITE, &NullDevWrite);
-	LogPrint("NULLDEV");
+	Log("null device initialized");
 }

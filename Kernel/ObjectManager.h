@@ -5,9 +5,9 @@
 #include <Access.h>
 #include <DeclSpec.h>
 
-#define ObSuper(x, t) (t*)((uintptr_t)x - sizeof(t))
-#define ObSub(x, t, d) (d*)((uintptr_t)x + sizeof(t))
-#define ObGetHeader(x) ObSuper(x, Obj)
+#define ObSuper(x, t) ((t*)((uintptr_t)x - sizeof(t)))
+#define ObSub(x, t, d) ((d*)((uintptr_t)x + sizeof(t)))
+#define ObGetHeader(x) (ObSuper(x, Obj))
 #define PointerObRead(x) ((Obj*)*((uintptr_t*)x->data))
 
 struct ObjDirectory;
@@ -43,4 +43,6 @@ DllExport Obj* ObCreate(char*, char*, size_t, void**);
 DllExport Obj* PointerObCreate(char*, ObjPointer**, uintptr_t);
 DllExport Obj* DirectoryObCreate(char*, ObjDirectory**);
 DllExport Obj* ObFind(char*);
+DllExport ObjDirectoryNode* DirectoryObGetLastChildNode(ObjDirectory* dir);
 DllExport int DirectoryObPrintTree(ObjDirectory*, int);
+DllExport void ObPrintRootDirectoryTree();

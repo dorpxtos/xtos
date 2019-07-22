@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -29,45 +29,45 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{DF1595B2-35F4-4CC7-8155-15278302B317}</ProjectGuid>
     <RootNamespace>Kernel</RootNamespace>
-    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <ProjectName>Kernel</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Metal|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Metal|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
@@ -100,7 +100,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <GenerateManifest>false</GenerateManifest>
-    <LibraryPath>C:\Users\Carver Harrison\Documents\Visual Studio 2015\Projects\XtOS\Debug;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(OutDir);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Metal|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -117,8 +117,8 @@
       <ExceptionHandling>false</ExceptionHandling>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <BufferSecurityCheck>false</BufferSecurityCheck>
-      <AdditionalOptions>-Oy- %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>C:\Users\Carver Harrison\Documents\Visual Studio 2015\Projects\XtOS\Kernel;C:\Users\Carver Harrison\Documents\Visual Studio 2015\Projects\XtOS\Vbe;C:\Users\Carver Harrison\Documents\Visual Studio 2015\Projects\XtOS\Serial;C:\Users\Carver Harrison\Documents\Visual Studio 2015\Projects\XtOS\I8042;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>-Oy- /utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>$(SolutionDir)Kernel;$(SolutionDir)Vbe;$(SolutionDir)Serial;$(SolutionDir)I8042;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CallingConvention>Cdecl</CallingConvention>
     </ClCompile>
     <Link>
@@ -131,7 +131,7 @@
       <FixedBaseAddress>false</FixedBaseAddress>
       <DataExecutionPrevention>true</DataExecutionPrevention>
       <SubSystem>Native</SubSystem>
-      <BaseAddress>0x100000</BaseAddress>
+      <BaseAddress>0xC0100000</BaseAddress>
       <RandomizedBaseAddress>true</RandomizedBaseAddress>
       <LargeAddressAware>false</LargeAddressAware>
       <AdditionalOptions>/DRIVER /ALIGN:512 %(AdditionalOptions)</AdditionalOptions>
@@ -143,15 +143,8 @@
       <AssemblyDebug>false</AssemblyDebug>
     </Link>
     <PostBuildEvent>
-      <Command>rem PeMultiboot 0x100000  "$(OutDir)Kernel.exe"
-copy "$(OutDir)*.exe" "$(SolutionDir)Floppy\"
-copy "$(OutDir)*.dll" "$(SolutionDir)Floppy\"
-copy "$(OutDir)*.sys" "$(SolutionDir)Floppy\"
-dd if="$(OutDir)bootsect.bin" of="$(OutDir)xtos.img" bs=512 count=1
-imdisk -a -f "$(OutDir)xtos.img" -s 1440K -m X:
-copy "$(SolutionDir)Floppy\*.*" X:\
-imdisk -D -m X:
-copy "$(OutDir)xtos.img" "$(OutDir)xtoshd.img"</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Metal|Win32'">
@@ -230,18 +223,26 @@ imdisk -D -m X:</Command>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <MASM Include="Entry.asm">
+    <NASM Include="Entry.asm">
       <FileType>Document</FileType>
-    </MASM>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">-fwin32 %(AdditionalOptions)</AdditionalOptions>
+    </NASM>
+    <NASM Include="FastSyscalls.asm">
+      <FileType>Document</FileType>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">-fwin32 %(AdditionalOptions)</AdditionalOptions>
+    </NASM>
     <MASM Include="InterruptStubs.asm" />
     <MASM Include="Lgdt.asm" />
     <MASM Include="llshl.asm" />
-    <MASM Include="PageMap.asm" />
     <NASM Include="SetVideo.asm">
       <FileType>Document</FileType>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">-fwin32 %(AdditionalOptions)</AdditionalOptions>
     </NASM>
     <NASM Include="Real.asm">
+      <FileType>Document</FileType>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">-fwin32 %(AdditionalOptions)</AdditionalOptions>
+    </NASM>
+    <NASM Include="SSE.asm">
       <FileType>Document</FileType>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">-fwin32 %(AdditionalOptions)</AdditionalOptions>
     </NASM>
@@ -251,6 +252,7 @@ imdisk -D -m X:</Command>
     <ClCompile Include="AtaPio.cpp" />
     <ClCompile Include="Bochs.cpp" />
     <ClCompile Include="CoreMods.cpp" />
+    <ClCompile Include="Cpuid.cpp" />
     <ClCompile Include="Crash.cpp" />
     <ClCompile Include="Device.cpp" />
     <ClCompile Include="Driver.cpp" />
@@ -260,37 +262,51 @@ imdisk -D -m X:</Command>
     <ClCompile Include="Gdt.cpp" />
     <ClCompile Include="Handle.cpp" />
     <ClCompile Include="Idt.cpp" />
+    <ClCompile Include="Ini.cpp" />
+    <ClCompile Include="Init.cpp" />
     <ClCompile Include="Io.cpp" />
+    <ClCompile Include="IoResource.cpp" />
     <ClCompile Include="Log.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MemoryAllocator.cpp" />
     <ClCompile Include="NullDev.cpp" />
     <ClCompile Include="ObjectManager.cpp" />
     <ClCompile Include="Paging.cpp" />
+    <ClCompile Include="Pdb.cpp" />
     <ClCompile Include="Pic.cpp" />
     <ClCompile Include="Pit.cpp" />
     <ClCompile Include="PortableExecutable.cpp" />
+    <ClCompile Include="Random.cpp" />
+    <ClCompile Include="Section.cpp" />
+    <ClCompile Include="Stacktrace.cpp" />
     <ClCompile Include="String.cpp" />
     <ClCompile Include="Syscalls.cpp" />
     <ClCompile Include="Task.cpp" />
     <ClCompile Include="TextMode.cpp" />
+    <ClCompile Include="Id.cpp" />
+    <ClCompile Include="Utf8.cpp" />
     <ClCompile Include="Video.cpp" />
     <ClCompile Include="XtApi.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Access.h" />
     <ClInclude Include="AtaPio.h" />
+    <ClInclude Include="BitmapFont.h" />
     <ClInclude Include="Bochs.h" />
     <ClInclude Include="Colors.h" />
     <ClInclude Include="CoreMods.h" />
+    <ClInclude Include="Cpuid.h" />
     <ClInclude Include="Crash.h" />
     <ClInclude Include="DeclSpec.h" />
+    <ClInclude Include="FastSyscalls.h" />
     <ClInclude Include="Fat12.h" />
     <ClInclude Include="File.h" />
     <ClInclude Include="Floppy.h" />
     <ClInclude Include="Gdt.h" />
     <ClInclude Include="Handle.h" />
     <ClInclude Include="Idt.h" />
+    <ClInclude Include="Ini.h" />
+    <ClInclude Include="Init.h" />
     <ClInclude Include="InternalFont.h" />
     <ClInclude Include="Io.h" />
     <ClInclude Include="Log.h" />
@@ -301,21 +317,33 @@ imdisk -D -m X:</Command>
     <ClInclude Include="NullDev.h" />
     <ClInclude Include="ObjectManager.h" />
     <ClInclude Include="Paging.h" />
+    <ClInclude Include="Pdb.h" />
     <ClInclude Include="Pic.h" />
     <ClInclude Include="Pit.h" />
+    <ClInclude Include="IoResource.h" />
     <ClInclude Include="PortableExecutable.h" />
     <ClInclude Include="PortIO.h" />
+    <ClInclude Include="Random.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="resource1.h" />
+    <ClInclude Include="Section.h" />
+    <ClInclude Include="SSE.h" />
+    <ClInclude Include="Stacktrace.h" />
     <ClInclude Include="stdarg.h" />
     <ClInclude Include="stdbool.h" />
     <ClInclude Include="stddef.h" />
     <ClInclude Include="stdint.h" />
     <ClInclude Include="string.h" />
     <ClInclude Include="Syscalls.h" />
+    <ClInclude Include="Status.h" />
+    <ClInclude Include="sys\types.h" />
     <ClInclude Include="Task.h" />
     <ClInclude Include="TextMode.h" />
+    <ClInclude Include="Id.h" />
+    <ClInclude Include="Utf8.h" />
     <ClInclude Include="vadefs.h" />
     <ClInclude Include="Video.h" />
+    <ClInclude Include="x86.h" />
     <ClInclude Include="XtApi.h" />
   </ItemGroup>
   <ItemGroup>

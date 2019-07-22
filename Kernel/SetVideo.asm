@@ -2,7 +2,7 @@ extern _RealRoutine
 
 global _SetVideo
 
-%define kernel_phys_offset 0x100000
+%define kernel_phys_offset 0xC0100000
 
 section .data
 

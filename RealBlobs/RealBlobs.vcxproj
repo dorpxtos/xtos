@@ -115,7 +115,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <NASM Include="Real.asm" />
+    <NASM Include="Real.asm">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">-fbin %(AdditionalOptions)</AdditionalOptions>
+    </NASM>
     <NASM Include="SetVideo.asm" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

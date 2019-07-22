@@ -1,6 +1,10 @@
 #pragma once
 #include <stddef.h>
 #include <stdint.h>
+#include <DeclSpec.h>
+#include <Device.h>
+#include <Driver.h>
+#include <Utf8.h>
 
 #pragma pack(push, 1)
 struct VbeInfoStruct {
@@ -34,10 +38,17 @@ struct DisplayObject {
 	int colors;
 	int bpp;
 	uint8_t* framebuffer;
+	uint8_t* prebuffer;
+};
+
+struct FontMapping {
+	uint32_t codepoint;
+	uint32_t glyph;
 };
 
 struct FontObject {
-	uint8_t* bitmap;
+	uint8_t** bitmap;
+	FontMapping* mapping;
 	int height;
 	int width;
 };
@@ -55,6 +66,12 @@ struct VideoLogObject {
 
 extern bool useVideoLog;
 extern VideoLogObject* videoLog;
+extern DisplayObject* mainDisplay;
 
+DllExport int VideoSetPixel(DisplayObject* display, int x, int y, int color);
+DllExport int VideoPreBufferSetPixel(DisplayObject* display, int x, int y, int color);
+DllExport DeviceObject* DisplayObCreate(char* name, int w, int h, int b, uintptr_t f, DriverObject* driver, DisplayObject** display);
+int VideoLogPrintChar(VideoLogObject*, utf8_int32_t);
+int VideoLogPrintCharUtf8(VideoLogObject*, char*);
+int VideoLogClear(VideoLogObject*);
 void VideoInit();
-int VideoLogPrintChar(VideoLogObject*, char);

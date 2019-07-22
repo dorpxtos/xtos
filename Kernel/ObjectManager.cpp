@@ -4,6 +4,7 @@
 #include <string.h>
 #include <Log.h>
 #include <MemoryAllocator.h>
+#include <Section.h>
 #include <ObjectManager.h>
 
 ObjDirectory* rootDirectory;
@@ -77,6 +78,13 @@ int DirectoryObPrintTree(ObjDirectory* dir, int level) {
 		if (!strcmp(t->obj->type, "Directory")) {
 			DirectoryObPrintTree((ObjDirectory*)t->obj->data, level + 1);
 		}
+		else if (!strcmp(t->obj->type, "Section")) {
+			SectionObject* s = (SectionObject*)t->obj->data;
+			for (int i = 0; i < level + 1; i++) {
+				LogPrintChar(' ');
+			}
+			LogPrint("- %80X -> %80X * %80X", s->physicalBase, s->virtualBase, s->size);
+		}
 
 		t = t->next;
 	}
@@ -121,7 +129,7 @@ char* ObParsePath(char* name, ObjDirectory** dir) {
 	while (*n) {
 		if (*n == '/') {
 			*b = 0;
-			Obj* o = DirectoryObGetChildByName(rootDirectory, buffer);
+			Obj* o = DirectoryObGetChildByName(cdir, buffer);
 			if (!strcmp(o->type, "Directory")) {
 				cdir = (ObjDirectory*)o->data;
 			} else {
@@ -135,7 +143,7 @@ char* ObParsePath(char* name, ObjDirectory** dir) {
 		}
 	}
 
-	char* bname = strchr(name, '/') + 1;
+	char* bname = strrchr(name, '/') + 1;
 
 	if ((int)bname == 1) {
 		bname = name;
@@ -159,6 +167,10 @@ Obj* ObCreate(char* name, char* type, size_t size, void** data) {
 	return ObCreateChild(bname, type, cdir, size, data);
 }
 
+extern "C" void ObPrintRootDirectoryTree() {
+	DirectoryObPrintTree(rootDirectory, 0);
+}
+
 void ObInit() {
 	DirectoryObCreateChild("Root", NULL, &rootDirectory);
 	DirectoryObCreate("Devices", NULL);
@@ -167,5 +179,11 @@ void ObInit() {
 	DirectoryObCreate("Threads", NULL);
 	DirectoryObCreate("Mountpoints", NULL);
 	DirectoryObCreate("Fonts", NULL);
-	LogPrint("OBJ");
+	DirectoryObCreate("Brushes", NULL);
+	DirectoryObCreate("Windows", NULL);
+	DirectoryObCreate("Sections", NULL);
+	DirectoryObCreate("IoResourceLists", NULL);
+	DirectoryObCreate("Acpi", NULL);
+	DirectoryObCreate("Acpi/Tables", NULL);
+	Log("Object Manager initialized");
 }

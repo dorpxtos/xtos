@@ -9,14 +9,15 @@
 
 #define PIT_IRQ 0
 
-uint64_t ticks = 0;
+uint64_t pitTicks = 0;
 
 extern "C" void PitIrq(InterruptRegisters* registers) {
+	//Log("PIT TICK");
 	// Tick
-	ticks++;
+	pitTicks++;
 
 	// Check if current process should yield
-	if ((size_t)ticks % yieldInterval == 0 && schedulerEnabled) {
+	if ((size_t)pitTicks % yieldInterval == 0 && schedulerEnabled) {
 		TaskYield(registers);
 	}
 }
@@ -31,5 +32,5 @@ void PitInit() {
 	IrqInstall(PIT_IRQ, PitIrq);
 	//PitSetFrequency(11931);
 
-	LogPrint("PIT");
+	Log("PIT initialized");
 }

@@ -1,4 +1,20 @@
+^Entry.asm
+C:\Users\Carver Harrison\Documents\Visual Studio 2019\Projects\XtOS\Kernel\Debug\Entry.obj
+^FastSyscalls.asm
+C:\Users\Carver Harrison\Documents\Visual Studio 2019\Projects\XtOS\Kernel\Debug\FastSyscalls.obj
 ^SetVideo.asm
-C:\Users\Carver Harrison\Documents\Visual Studio 2015\Projects\XtOS\Kernel\Debug\SetVideo.obj
+C:\Users\Carver Harrison\Documents\Visual Studio 2019\Projects\XtOS\Kernel\Debug\SetVideo.obj
 ^Real.asm
-C:\Users\Carver Harrison\Documents\Visual Studio 2015\Projects\XtOS\Kernel\Debug\Real.obj
+C:\Users\Carver Harrison\Documents\Visual Studio 2019\Projects\XtOS\Kernel\Debug\Real.obj
+^SSE.asm
+C:\Users\Carver Harrison\Documents\Visual Studio 2019\Projects\XtOS\Kernel\Debug\SSE.obj
+^Entry.asm
+C:\Users\Carver Harrison\Documents\Visual Studio 2019\Projects\XtOS\Kernel\Debug\Entry.obj
+^FastSyscalls.asm
+C:\Users\Carver Harrison\Documents\Visual Studio 2019\Projects\XtOS\Kernel\Debug\FastSyscalls.obj
+^SetVideo.asm
+C:\Users\Carver Harrison\Documents\Visual Studio 2019\Projects\XtOS\Kernel\Debug\SetVideo.obj
+^Real.asm
+C:\Users\Carver Harrison\Documents\Visual Studio 2019\Projects\XtOS\Kernel\Debug\Real.obj
+^SSE.asm
+C:\Users\Carver Harrison\Documents\Visual Studio 2019\Projects\XtOS\Kernel\Debug\SSE.obj

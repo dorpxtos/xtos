@@ -4,7 +4,7 @@
     <LocalDebuggerCommand>C:\Program Files\qemu\qemu-system-i386.exe</LocalDebuggerCommand>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerWorkingDirectory>..\Debug</LocalDebuggerWorkingDirectory>
-    <LocalDebuggerCommandArguments>-hda xtoshd.img -fda xtos.img -boot a -m 128M -serial stdio -d int,cpu_reset -D qemu.log</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>-hda xtoshd.img -fda xtos.img -boot a -m 128M -d cpu_reset -debugcon stdio -display sdl -soundhw pcspk -s</LocalDebuggerCommandArguments>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Metal|Win32'">
     <LocalDebuggerCommand>C:\Program Files\qemu\qemu-system-i386.exe</LocalDebuggerCommand>

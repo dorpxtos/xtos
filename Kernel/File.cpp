@@ -42,7 +42,7 @@ File* FileOpen(char* name) {
 		signed int sc = IoCallDriver(dev, ior);
 		
 		if (sc < 0) {
-			LogPrint("## FileOpen: Error %d ##", -sc);
+			Log("## FileOpen: Error %d ##", -sc);
 			IoDestroyRequest(ior);
 			return NULL;
 		}
@@ -56,7 +56,7 @@ File* FileOpen(char* name) {
 		return NULL;
 	}
 	
-	LogPrint("## Could not find '%s' ##", mpname);
+	Log("## Could not find '%s' ##", mpname);
 	return NULL;
 }
 
@@ -87,6 +87,29 @@ int FileRead(File* f, uint8_t* buffer, size_t count) {
 int FileReadAll(File* f, uint8_t* buffer) {
 	int rv = FileRead(f, buffer, f->length);
 	return rv;
+}
+
+off_t FileTell(File* f) {
+	//LogPrint("tell %s: %d", f->name, f->position);
+	return f->position;
+}
+
+off_t FileSeek(File* f, off_t offset, int whence) {
+	switch (whence) {
+	case SEEK_SET:
+		f->position = offset;
+		break;
+	case SEEK_CUR:
+		f->position += offset;
+		break;
+	case SEEK_END:
+		f->position = f->length - offset;
+		break;
+	default:
+		Log("Invalid seek using %d", whence);
+	}
+
+	return 0;
 }
 
 /*

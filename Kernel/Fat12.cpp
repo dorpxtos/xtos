@@ -22,16 +22,15 @@ static inline int Fat12FirstSectorOfCluster(Fat12Filesystem* fs, int cluster) {
 	return fs->dataStartSector + (cluster - 2) * fs->bootsector.sectorsPerCluster;
 }
 
-int Fat12DevFsRead(IoStack* req) {
+IoStatus Fat12DevFsRead(IoStack* req) {
 	Fat12Filesystem* fs = ObSub(ObSub(req->file->device, DeviceObject, VolumeObject), VolumeObject, Fat12Filesystem);
 
 	// TODO: Do not read the whole file
 	Fat12ReadWholeFile(fs, (Fat12FileEntry*)req->file->context, req->parameters.fsRead.buffer);
-
 	return IOSTATUS_SUCCESS;
 }
 
-int Fat12DevFsOpen(IoStack* req) {
+IoStatus Fat12DevFsOpen(IoStack* req) {
 	VolumeObject* vol = ObSub(req->device, DeviceObject, VolumeObject);
 	Fat12Filesystem* fs = ObSub(vol, VolumeObject, Fat12Filesystem);
 	Fat12FileEntry* fatFile = Fat12OpenFile(fs, req->parameters.fsOpen.name);
@@ -108,12 +107,12 @@ void Fat12ReadBootsector(Fat12Filesystem* fs) {
 }
 
 void Fat12PrintBootsector(Fat12Filesystem* fs) {
-	LogPrint("bytesPerSector = %d\nsectorsPerCluster = %d\nreservedSectorCount = %d\ntableCount = %d\nrootEntryCount = %d\ntotalSectors16 = %d\nmediaType = %d\ntableSize16 = %d\nsectorsPerTrack = %d\nheadSideCount = %d\nhiddenSectorCount = %d\ntotalSectors32 = %d",
+	Log("bytesPerSector = %d\nsectorsPerCluster = %d\nreservedSectorCount = %d\ntableCount = %d\nrootEntryCount = %d\ntotalSectors16 = %d\nmediaType = %d\ntableSize16 = %d\nsectorsPerTrack = %d\nheadSideCount = %d\nhiddenSectorCount = %d\ntotalSectors32 = %d",
 		fs->bootsector.bytesPerSector, fs->bootsector.sectorsPerCluster, fs->bootsector.reservedSectorCount, fs->bootsector.tableCount, fs->bootsector.rootEntryCount, fs->bootsector.totalSectors16, fs->bootsector.mediaType, fs->bootsector.tableSize16, fs->bootsector.sectorsPerTrack, fs->bootsector.headSideCount, fs->bootsector.totalSectors32);
 }
 
 void Fat12PrintMediaInfo(Fat12Filesystem* fs) {
-	LogPrint("filesystemSize: %d (%d KiB)\nFAT: %x\nDIR: %x\nDAT: %x", fs->filesystemSize, fs->filesystemSize/1024, fs->fatStartSector, fs->rootDirStartSector, fs->dataStartSector);
+	Log("filesystemSize: %d (%d KiB)\nFAT: %x\nDIR: %x\nDAT: %x", fs->filesystemSize, fs->filesystemSize/1024, fs->fatStartSector, fs->rootDirStartSector, fs->dataStartSector);
 }
 
 Fat12FileEntry* Fat12ReadRootDirectory(Fat12Filesystem* fs, Fat12FileEntry* files) {
@@ -121,7 +120,7 @@ Fat12FileEntry* Fat12ReadRootDirectory(Fat12Filesystem* fs, Fat12FileEntry* file
 
 	for (int i = 0; i < fs->bootsector.rootEntryCount; i++) {
 		if (files[i].filename[0] == 0) break;
-		//LogPrint("[%s] sector=%d", files[i].filename, Fat12FirstSectorOfCluster(fs, files[i].clusterLow));
+		//Log("[%s] sector=%d", files[i].filename, Fat12FirstSectorOfCluster(fs, files[i].clusterLow));
 	}
 
 	return files;
@@ -184,21 +183,21 @@ int Fat12ReadFileClusters(Fat12Filesystem* fs, Fat12FileEntry* f, uint8_t* buffe
 		else
 			tableval = tableval & 0x0FFF;
 
-		//LogPrint("%x->%x %x", cluster, tableval, bufoffset);
+		//Log("%x->%x %x", cluster, tableval, bufoffset);
 		
 		if (tableval == 0x000) {
-			LogPrint("FAT entry is FREE, expected USED (Corrupt FAT?)");
+			Log("FAT entry is FREE, expected USED (Corrupt FAT?)");
 			break;
 		}
 		else if (tableval == 0x001 || (tableval >= 0xFF0 && tableval <= 0xFF6)) {
-			LogPrint("FAT entry is RESERVED, expected USED (Corrupt FAT?)");
+			Log("FAT entry is RESERVED, expected USED (Corrupt FAT?)");
 			break;
 		}
 		else if (tableval >= 0x002 && tableval <= 0xFEF) {
 			cluster = tableval;
 		}
 		else if (tableval == 0xFF7) {
-			LogPrint("Bad FAT Sector");
+			Log("Bad FAT Sector");
 			break;
 		}
 		else if (tableval >= 0xFF8 && tableval <= 0xFFF) {
@@ -215,6 +214,7 @@ int Fat12ReadFileClusters(Fat12Filesystem* fs, Fat12FileEntry* f, uint8_t* buffe
 
 int Fat12ReadWholeFile(Fat12Filesystem* fs, Fat12FileEntry* f, uint8_t* buffer) {
 	int sectstoread = (f->size + (f->size / 2)) / fs->bootsector.bytesPerSector / fs->bootsector.sectorsPerCluster;
+	if (!sectstoread) sectstoread = 1;
 	return Fat12ReadFileClusters(fs, f, buffer, 0, sectstoread);
 }
 
@@ -233,6 +233,6 @@ void Fat12Init() {
 	uint8_t* x = (uint8_t*)MemoryAllocate(f->size);
 	TextmodeClear();
 	Fat12ReadWholeFile(bootfs, f, x);
-	LogPrint("%s", x);*/
-	LogPrint("FAT");
+	Log("%s", x);*/
+	Log("FAT");
 }

@@ -136,7 +136,7 @@ unsigned char IdeIdentify(unsigned char bus, unsigned char drive) {
 	outb(io + ATA_REG_LBA2, 0);
 	/* Now, send IDENTIFY */
 	outb(io + ATA_REG_COMMAND, ATA_CMD_IDENTIFY);
-	LogPrint("ata.c: sent IDENTIFY");
+	Log("sent IDENTIFY");
 	/* Now, read status port */
 	uint8_t status = inb(io + ATA_REG_STATUS);
 	if (status) {
@@ -146,11 +146,11 @@ unsigned char IdeIdentify(unsigned char bus, unsigned char drive) {
 	pm_stat_read:
 		status = inb(io + ATA_REG_STATUS);
 		if (status & ATA_SR_ERR) {
-			LogPrint("ata.c: %s%s has ERR set. Disabled.", bus == ATA_PRIMARY ? "Primary" : "Secondary", drive == ATA_PRIMARY ? " master" : " slave");
+			Log("%s%s has ERR set. Disabled.", bus == ATA_PRIMARY ? "Primary" : "Secondary", drive == ATA_PRIMARY ? " master" : " slave");
 			return 0;
 		}
 		while (!(status & ATA_SR_DRQ)) goto pm_stat_read;
-		LogPrint("ata.c: %s%s is online.", bus == ATA_PRIMARY ? "Primary" : "Secondary", drive == ATA_PRIMARY ? " master" : " slave");
+		Log("%s%s is online.", bus == ATA_PRIMARY ? "Primary" : "Secondary", drive == ATA_PRIMARY ? " master" : " slave");
 		/* Now, actually read the data */
 		for (int i = 0; i<256; i++) {
 			*(uint16_t *)(ide_buf + i * 2) = inw(io + ATA_REG_DATA);
@@ -175,7 +175,7 @@ retry:;
 retry2:
 	status = inb(io + ATA_REG_STATUS);
 	if (status & ATA_SR_ERR) {
-		LogPrint("ata.c: ERR set, device failure!");
+		Log("ERR set, device failure!");
 	}
 	//mprint("testing for DRQ\n");
 	if (!(status & ATA_SR_DRQ)) goto retry2;
@@ -206,17 +206,17 @@ unsigned char AtaReadOne(unsigned char* buf, unsigned int lba, AtaDrive* dev) {
 		drive = ATA_SLAVE;
 		break;
 	default:
-		LogPrint("ata.c: unknown drive: %d (%s)", drive, dev->name);
+		Log("unknown drive: %d (%s)", drive, dev->name);
 		return 0;
 	}
-	//LogPrint("ata.c: io=0x%x %s", io, drive==ATA_MASTER?"Master":"Slave");
+	//Log("io=0x%x %s", io, drive==ATA_MASTER?"Master":"Slave");
 	uint8_t cmd = (drive == ATA_MASTER ? 0xE0 : 0xF0);
 	uint8_t slavebit = (drive == ATA_MASTER ? 0x00 : 0x01);
-	/*LogPrint("ata.c: LBA = 0x%x", lba);
-	LogPrint("ata.c: LBA>>24 & 0x0f = %d", (lba >> 24)&0x0f);
-	LogPrint("ata.c: (uint8_t)lba = %d", (uint8_t)lba);
-	LogPrint("ata.c: (uint8_t)(lba >> 8) = %d", (uint8_t)(lba >> 8));
-	LogPrint("ata.c: (uint8_t)(lba >> 16) = %d", (uint8_t)(lba >> 16));*/
+	/*Log("LBA = 0x%x", lba);
+	Log("LBA>>24 & 0x0f = %d", (lba >> 24)&0x0f);
+	Log("(uint8_t)lba = %d", (uint8_t)lba);
+	Log("(uint8_t)(lba >> 8) = %d", (uint8_t)(lba >> 8));
+	Log("(uint8_t)(lba >> 16) = %d", (uint8_t)(lba >> 16));*/
 	//outb(io + ATA_REG_HDDEVSEL, cmd | ((lba >> 24)&0x0f));
 	outb(io + ATA_REG_HDDEVSEL, (cmd | (uint8_t)((lba >> 24 & 0x0F))));
 	//mprint("issued 0x%x to 0x%x\n", (cmd | (lba >> 24)&0x0f), io + ATA_REG_HDDEVSEL);
@@ -278,20 +278,20 @@ void AtaProbe() {
 		drv->id = 0;
 		drv->name = str;
 
-		LogPrint("ata.c: device: %s", drv->name);
+		Log("device: %s", drv->name);
 	}
 	IdeIdentify(ATA_PRIMARY, ATA_SLAVE);
 	/*ide_identify(ATA_SECONDARY, ATA_MASTER);
 	ide_identify(ATA_SECONDARY, ATA_SLAVE);*/
 }
 
-int AtaPioDevRead(IoStack* req) {
+IoStatus AtaPioDevRead(IoStack* req) {
 	AtaDrive* drv = ObSub(ataPrimaryMasterDevice, DeviceObject, AtaDrive);
 	AtaRead(req->parameters.read.buffer, req->parameters.read.offset, req->parameters.read.count, drv);
 	return IOSTATUS_SUCCESS;
 }
 
-int AtaPioDevWrite(IoRequest* req) {
+IoStatus AtaPioDevWrite(IoRequest* req) {
 	return IOSTATUS_NOTIMPLEMENTED;
 }
 
@@ -300,5 +300,5 @@ void AtaPioInit() {
 	DriverObRegisterFunction(ataPioDriver, DRIVER_FUNCTION_READ, &AtaPioDevRead);
 	DriverObRegisterFunction(ataPioDriver, DRIVER_FUNCTION_WRITE, &AtaPioDevWrite);
 	AtaProbe();
-	LogPrint("PIO");
+	Log("AtaPio initialized");
 }

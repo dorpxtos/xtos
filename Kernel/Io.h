@@ -25,6 +25,10 @@
 #define DRIVER_FUNCTION_FS_UNMOUNT	0x0000000A
 #define DRIVER_FUNCTION_FS_SEEK		0x0000000B
 #define DRIVER_FUNCTION_FS_TELL		0x0000000C
+#define DRIVER_FUNCTION_VI_UPDATE	0x0000000D
+#define DRIVER_FUNCTION_BEEP		0x0000000E
+
+typedef size_t IoStatus;
 
 struct IoStack {
 	uint32_t majorFunction;
@@ -58,6 +62,10 @@ struct IoStack {
 		struct {
 			char driveLetter;
 		} fsMount;
+
+		struct {
+			uint32_t frequency;
+		} beep;
 	} parameters;
 
 	DeviceObject* device;

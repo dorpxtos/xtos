@@ -1,11 +1,12 @@
 #include <stdint.h>
 #include <string.h>
-#include <TextMode.h>
+#include <Paging.h>
 #include <MemoryAllocator.h>
+#include <TextMode.h>
 
-#define CLEAR_COLOR 0
+#define CLEAR_COLOR 0x1000
 
-static uint16_t* tmbuffer = (uint16_t*)0xb8000;
+static uint16_t* tmbuffer = (uint16_t*)(KERNEL_MEMORY_BASE + 0xb8000);
 static int row = 0;
 static int col = 0;
 
@@ -21,7 +22,7 @@ void TextmodePrintChar(char c) {
 	}
 
 	if (c != '\n') {
-		tmbuffer[row * cols + col] = (uint16_t)c | 0x0F00;
+		tmbuffer[row * cols + col] = (uint16_t)c | 0x1F00;
 		col++;
 	}
 
@@ -50,7 +51,7 @@ void TextmodePrintString(char* s) {
 }
 
 void TextmodeClear() {
-	memset((void*)tmbuffer, 0, rows * cols * 2);
+	memset((void*)tmbuffer, CLEAR_COLOR, rows * cols * 2);
 	row = 0;
 	col = 0;
 }

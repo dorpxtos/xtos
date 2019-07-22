@@ -1,0 +1,362 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <ProjectGuid>{EB581E2F-F89B-48D3-B969-E518C8EB5408}</ProjectGuid>
+    <RootNamespace>Acpi</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <GenerateManifest>false</GenerateManifest>
+    <LibraryPath>C:\Users\Carver Harrison\Documents\Visual Studio 2019\Projects\XtOS\Debug;$(LibraryPath)</LibraryPath>
+    <TargetExt>.dll</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <TargetExt>.dll</TargetExt>
+    <LibraryPath>C:\Users\Carver Harrison\Documents\Visual Studio 2019\Projects\XtOS\Debug;$(LibraryPath)</LibraryPath>
+    <GenerateManifest>false</GenerateManifest>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>false</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>C:\Users\Carver Harrison\Documents\Visual Studio 2019\Projects\XtOS\Kernel;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ExceptionHandling>false</ExceptionHandling>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <UseFullPaths>false</UseFullPaths>
+      <CompileAs>CompileAsC</CompileAs>
+    </ClCompile>
+    <Link>
+      <SubSystem>Native</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>Kernel.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateMapFile>true</GenerateMapFile>
+      <EntryPointSymbol>AcpiInit</EntryPointSymbol>
+      <BaseAddress>0xc4000000</BaseAddress>
+      <AdditionalOptions>/DRIVER /ALIGN:512 %(AdditionalOptions)</AdditionalOptions>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>false</SDLCheck>
+      <ConformanceMode>false</ConformanceMode>
+      <AdditionalIncludeDirectories>C:\Users\Carver Harrison\Documents\Visual Studio 2019\Projects\XtOS\Kernel;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ExceptionHandling>false</ExceptionHandling>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <CompileAs>Default</CompileAs>
+      <StringPooling>true</StringPooling>
+      <SupportJustMyCode>false</SupportJustMyCode>
+      <AdditionalOptions>/DRIVER %(AdditionalOptions)</AdditionalOptions>
+      <EnforceTypeConversionRules>false</EnforceTypeConversionRules>
+    </ClCompile>
+    <Link>
+      <SubSystem>Native</SubSystem>
+      <AdditionalDependencies>Kernel.lib</AdditionalDependencies>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <EntryPointSymbol>AcpiInit</EntryPointSymbol>
+      <BaseAddress>0xC4000000</BaseAddress>
+      <AdditionalOptions>/DRIVER /ALIGN:512 %(AdditionalOptions)</AdditionalOptions>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="dsargs.c" />
+    <ClCompile Include="dscontrol.c" />
+    <ClCompile Include="dsdebug.c" />
+    <ClCompile Include="dsfield.c" />
+    <ClCompile Include="dsinit.c" />
+    <ClCompile Include="dsmethod.c" />
+    <ClCompile Include="dsmthdat.c" />
+    <ClCompile Include="dsobject.c" />
+    <ClCompile Include="dsopcode.c" />
+    <ClCompile Include="dspkginit.c" />
+    <ClCompile Include="dsutils.c" />
+    <ClCompile Include="dswexec.c" />
+    <ClCompile Include="dswload.c" />
+    <ClCompile Include="dswload2.c" />
+    <ClCompile Include="dswscope.c" />
+    <ClCompile Include="dswstate.c" />
+    <ClCompile Include="evevent.c" />
+    <ClCompile Include="evglock.c" />
+    <ClCompile Include="evgpe.c" />
+    <ClCompile Include="evgpeblk.c" />
+    <ClCompile Include="evgpeinit.c" />
+    <ClCompile Include="evgpeutil.c" />
+    <ClCompile Include="evhandler.c" />
+    <ClCompile Include="evmisc.c" />
+    <ClCompile Include="evregion.c" />
+    <ClCompile Include="evrgnini.c" />
+    <ClCompile Include="evsci.c" />
+    <ClCompile Include="evxface.c" />
+    <ClCompile Include="evxfevnt.c" />
+    <ClCompile Include="evxfgpe.c" />
+    <ClCompile Include="evxfregn.c" />
+    <ClCompile Include="exconcat.c" />
+    <ClCompile Include="exconfig.c" />
+    <ClCompile Include="exconvrt.c" />
+    <ClCompile Include="excreate.c" />
+    <ClCompile Include="exdebug.c" />
+    <ClCompile Include="exdump.c" />
+    <ClCompile Include="exfield.c" />
+    <ClCompile Include="exfldio.c" />
+    <ClCompile Include="exmisc.c" />
+    <ClCompile Include="exmutex.c" />
+    <ClCompile Include="exnames.c" />
+    <ClCompile Include="exoparg1.c" />
+    <ClCompile Include="exoparg2.c" />
+    <ClCompile Include="exoparg3.c" />
+    <ClCompile Include="exoparg6.c" />
+    <ClCompile Include="exprep.c" />
+    <ClCompile Include="exregion.c" />
+    <ClCompile Include="exresnte.c" />
+    <ClCompile Include="exresolv.c" />
+    <ClCompile Include="exresop.c" />
+    <ClCompile Include="exserial.c" />
+    <ClCompile Include="exstore.c" />
+    <ClCompile Include="exstoren.c" />
+    <ClCompile Include="exstorob.c" />
+    <ClCompile Include="exsystem.c" />
+    <ClCompile Include="extrace.c" />
+    <ClCompile Include="exutils.c" />
+    <ClCompile Include="hwacpi.c" />
+    <ClCompile Include="hwesleep.c" />
+    <ClCompile Include="hwgpe.c" />
+    <ClCompile Include="hwpci.c" />
+    <ClCompile Include="hwregs.c" />
+    <ClCompile Include="hwsleep.c" />
+    <ClCompile Include="hwtimer.c" />
+    <ClCompile Include="hwvalid.c" />
+    <ClCompile Include="hwxface.c" />
+    <ClCompile Include="hwxfsleep.c" />
+    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="nsaccess.c" />
+    <ClCompile Include="nsalloc.c" />
+    <ClCompile Include="nsarguments.c" />
+    <ClCompile Include="nsconvert.c" />
+    <ClCompile Include="nsdump.c" />
+    <ClCompile Include="nsdumpdv.c" />
+    <ClCompile Include="nseval.c" />
+    <ClCompile Include="nsinit.c" />
+    <ClCompile Include="nsload.c" />
+    <ClCompile Include="nsnames.c" />
+    <ClCompile Include="nsobject.c" />
+    <ClCompile Include="nsparse.c" />
+    <ClCompile Include="nspredef.c" />
+    <ClCompile Include="nsprepkg.c" />
+    <ClCompile Include="nsrepair.c" />
+    <ClCompile Include="nsrepair2.c" />
+    <ClCompile Include="nssearch.c" />
+    <ClCompile Include="nsutils.c" />
+    <ClCompile Include="nswalk.c" />
+    <ClCompile Include="nsxfeval.c" />
+    <ClCompile Include="nsxfname.c" />
+    <ClCompile Include="nsxfobj.c" />
+    <ClCompile Include="osxtos.cpp" />
+    <ClCompile Include="psargs.c" />
+    <ClCompile Include="psloop.c" />
+    <ClCompile Include="psobject.c" />
+    <ClCompile Include="psopcode.c" />
+    <ClCompile Include="psopinfo.c" />
+    <ClCompile Include="psparse.c" />
+    <ClCompile Include="psscope.c" />
+    <ClCompile Include="pstree.c" />
+    <ClCompile Include="psutils.c" />
+    <ClCompile Include="pswalk.c" />
+    <ClCompile Include="psxface.c" />
+    <ClCompile Include="tbdata.c" />
+    <ClCompile Include="tbfadt.c" />
+    <ClCompile Include="tbfind.c" />
+    <ClCompile Include="tbinstal.c" />
+    <ClCompile Include="tbprint.c" />
+    <ClCompile Include="tbutils.c" />
+    <ClCompile Include="tbxface.c" />
+    <ClCompile Include="tbxfload.c" />
+    <ClCompile Include="tbxfroot.c" />
+    <ClCompile Include="utaddress.c" />
+    <ClCompile Include="utalloc.c" />
+    <ClCompile Include="utascii.c" />
+    <ClCompile Include="utbuffer.c" />
+    <ClCompile Include="utcache.c" />
+    <ClCompile Include="utclib.c" />
+    <ClCompile Include="utcopy.c" />
+    <ClCompile Include="utdebug.c" />
+    <ClCompile Include="utdecode.c" />
+    <ClCompile Include="utdelete.c" />
+    <ClCompile Include="uterror.c" />
+    <ClCompile Include="uteval.c" />
+    <ClCompile Include="utexcep.c" />
+    <ClCompile Include="utglobal.c" />
+    <ClCompile Include="uthex.c" />
+    <ClCompile Include="utids.c" />
+    <ClCompile Include="utinit.c" />
+    <ClCompile Include="utlock.c" />
+    <ClCompile Include="utmath.c" />
+    <ClCompile Include="utmisc.c" />
+    <ClCompile Include="utmutex.c" />
+    <ClCompile Include="utnonansi.c" />
+    <ClCompile Include="utobject.c" />
+    <ClCompile Include="utosi.c" />
+    <ClCompile Include="utownerid.c" />
+    <ClCompile Include="utpredef.c" />
+    <ClCompile Include="utprint.c" />
+    <ClCompile Include="utresdecode.c" />
+    <ClCompile Include="utresrc.c" />
+    <ClCompile Include="utstate.c" />
+    <ClCompile Include="utstring.c" />
+    <ClCompile Include="utstrsuppt.c" />
+    <ClCompile Include="utstrtoul64.c" />
+    <ClCompile Include="uttrack.c" />
+    <ClCompile Include="utuuid.c" />
+    <ClCompile Include="utxface.c" />
+    <ClCompile Include="utxferror.c" />
+    <ClCompile Include="utxfinit.c" />
+    <ClCompile Include="utxfmutex.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="acapps.h" />
+    <ClInclude Include="acbuffer.h" />
+    <ClInclude Include="acclib.h" />
+    <ClInclude Include="accommon.h" />
+    <ClInclude Include="acconfig.h" />
+    <ClInclude Include="acconvert.h" />
+    <ClInclude Include="acdebug.h" />
+    <ClInclude Include="acdisasm.h" />
+    <ClInclude Include="acdispat.h" />
+    <ClInclude Include="acevents.h" />
+    <ClInclude Include="acexcep.h" />
+    <ClInclude Include="acglobal.h" />
+    <ClInclude Include="achware.h" />
+    <ClInclude Include="acinterp.h" />
+    <ClInclude Include="aclocal.h" />
+    <ClInclude Include="acmacros.h" />
+    <ClInclude Include="acmsvc.h" />
+    <ClInclude Include="acnames.h" />
+    <ClInclude Include="acnamesp.h" />
+    <ClInclude Include="acobject.h" />
+    <ClInclude Include="acopcode.h" />
+    <ClInclude Include="acoutput.h" />
+    <ClInclude Include="acparser.h" />
+    <ClInclude Include="acpi.h" />
+    <ClInclude Include="acpiosxf.h" />
+    <ClInclude Include="acpixf.h" />
+    <ClInclude Include="acpredef.h" />
+    <ClInclude Include="acresrc.h" />
+    <ClInclude Include="acrestyp.h" />
+    <ClInclude Include="acstruct.h" />
+    <ClInclude Include="actables.h" />
+    <ClInclude Include="actbinfo.h" />
+    <ClInclude Include="actbl.h" />
+    <ClInclude Include="actbl1.h" />
+    <ClInclude Include="actbl2.h" />
+    <ClInclude Include="actbl3.h" />
+    <ClInclude Include="actypes.h" />
+    <ClInclude Include="acutils.h" />
+    <ClInclude Include="acuuid.h" />
+    <ClInclude Include="amlcode.h" />
+    <ClInclude Include="amlresrc.h" />
+    <ClInclude Include="platform\acenv.h" />
+    <ClInclude Include="platform\acenvex.h" />
+    <ClInclude Include="platform\acmsvc.h" />
+    <ClInclude Include="platform\acmsvcex.h" />
+    <ClInclude Include="platform\acxtos.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

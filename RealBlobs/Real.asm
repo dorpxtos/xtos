@@ -2,6 +2,7 @@
 
 org 0x1000
 bits 32
+
 ; Save stack
 mov dword [saved_stack], esp
 

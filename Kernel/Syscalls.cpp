@@ -9,7 +9,7 @@
 #include <Task.h>
 #include <Syscalls.h>
 
-#define TOTAL_SYSCALLS 255
+#define TOTAL_SYSCALLS 0x400
 
 uintptr_t syscallTable[TOTAL_SYSCALLS];
 
@@ -33,7 +33,8 @@ extern "C" {
 
 		if (p) {
 			uint32_t(*sc)(InterruptRegisters*) = (uint32_t(*)(InterruptRegisters*)) p;
-			return sc(regs);
+			uint32_t rv = sc(regs);
+			return rv;
 		}
 		
 		LogPrint("Attempted to call non-existant syscall %d.", regs->eax);
@@ -56,6 +57,10 @@ extern "C" {
 		return h;
 	}
 
+	uint32_t ScFileClose(InterruptRegisters* regs) {
+		return FileClose((File*)HandleRead(regs->esi));
+	}
+
 	uint32_t ScFileRead(InterruptRegisters* regs) {
 		File* f = (File*)HandleRead(regs->esi);
 		return FileReadAll(f, (uint8_t*)regs->edi);
@@ -66,11 +71,30 @@ extern "C" {
 		return 0;
 	}
 
+	uint32_t ScFileTell(InterruptRegisters* regs) {
+		File* f = (File*)HandleRead(regs->esi);
+		return FileTell(f);
+	}
+
+	uint32_t ScFileSeek(InterruptRegisters* regs) {
+		File* f = (File*)HandleRead(regs->ebx);
+		return FileSeek(f, regs->esi, regs->edi);
+	}
+
 	uint32_t ScPrintString(InterruptRegisters* regs) {
 		char* s = (char*)regs->esi;
 		for (int i = 0; s[i]; i++) {
 			XtPrintChar(s[i]);
 		}
+		return 0;
+	}
+
+	uint32_t ScAllocPages(InterruptRegisters* regs) {
+		return (uint32_t)ProcAllocPages(currentProcess, (size_t)regs->esi);
+	}
+
+	uint32_t ScDebugInfo(InterruptRegisters* regs) {
+		ObPrintRootDirectoryTree();
 		return 0;
 	}
 }
@@ -79,8 +103,13 @@ void SyscallsInit() {
 	SyscallInstall(0, &ScPrintChar);
 	SyscallInstall(1, &ScGetRunningThreadHandle);
 	SyscallInstall(2, &ScFileOpen);
-	SyscallInstall(3, &ScFileRead);
-	SyscallInstall(4, &ScFileWrite);
-	SyscallInstall(5, &ScPrintString);
+	SyscallInstall(3, &ScFileClose);
+	SyscallInstall(4, &ScFileRead);
+	SyscallInstall(5, &ScFileWrite);
+	SyscallInstall(6, &ScFileTell);
+	SyscallInstall(7, &ScFileSeek);
+	SyscallInstall(8, &ScPrintString);
+	SyscallInstall(9, &ScAllocPages);
+	SyscallInstall(10, &ScDebugInfo);
 	LogPrint("SYSCALLS");
 }
